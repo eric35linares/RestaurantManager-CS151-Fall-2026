@@ -1,24 +1,40 @@
 package restaurant;
 
+import java.util.ArrayList;
+
 public class Receipt {
     
 private double subtotal;
 private double taxRate;
 private double tip;
 private double amountPaid;
+private double discount;
+private ArrayList<MenuItem> items;
+private int orderNumber;
 
-public Receipt(double subtotal){
-    if(subtotal < 0){
-        throw new IllegalArgumentException("Subtotal cannot be negative");
+
+public Receipt(int orderNumber, ArrayList<MenuItem> items, double discount){
+    this.orderNumber = orderNumber;
+    this.items = new ArrayList<MenuItem>(items);
+    this.discount = discount;
+
+    subtotal = 0;
+
+    for(MenuItem item : items){
+        subtotal += item.getPrice();
     }
-    this.subtotal = subtotal;
-    this.taxRate = 0.1075; // 10.75% tax rate
-    this.tip = 0;
-    this.amountPaid = 0;
+
+    if(discount < 0 || discount > subtotal){
+        throw new IllegalArgumentException("Invalid Discount");
+    }
+
+    taxRate = 0.10;
+    tip = 0;
+    amountPaid = 0;
 }
 
 public double calculateTax(){
-    return subtotal * taxRate;
+    return (subtotal - discount) * taxRate;
 }
 
 public void addTip(double amount){
@@ -29,11 +45,11 @@ public void addTip(double amount){
 }
 
 public double calculateTotal(){
-    return subtotal + calculateTax() + tip;
+    return subtotal - discount + calculateTax() + tip;
 }
 
 public void recordPayment(double amount){
-    if(amount < 0){
+    if(amount <= 0){
         throw new IllegalArgumentException("Payment must be positive");
     }
     amountPaid = amountPaid + amount;
@@ -45,11 +61,21 @@ public double calculateBalance(){
 
 @Override
 public String toString(){
-    return "Subtotal: $" + subtotal + "\n" +
-              "Tax: $" + calculateTax() + "\n" +
-              "Tip: $" + tip + "\n" +
-              "Total: $" + calculateTotal() + "\n" +
-              "Amount Paid: $" + amountPaid + "\n" +
-              "Balance Due: $" + calculateBalance();
- }
+    String 
+    result = "STAR HOUSE CAFE\n";
+    result += "Order #" + orderNumber + "\n";
+    result += "------------------------------\n";
+
+    for(MenuItem item : items){
+        result += item.getName() + " - $" + item.getPrice() + "\n";
+    }
+    result += "--------------------\n";
+    result += "Subtotal: $" + subtotal + "\n";
+    result += "Discount: -$" + discount + "\n";
+    result += "Tax: $" + calculateTax() + "\n";
+    result += "Tip: $" + tip + "\n";
+    result += String.format("Total $%.2f\n", calculateTotal());
+
+    return result;
+}
 }

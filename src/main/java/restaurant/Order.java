@@ -6,6 +6,7 @@ public class Order implements Discountable{
     private int orderNumber;
     private ArrayList<MenuItem> items;
     private boolean completed;
+    public double discountPercent;
 
     public Order(int orderNumber){
         this.orderNumber = orderNumber;
@@ -54,8 +55,6 @@ public class Order implements Discountable{
         return applyDiscount(calculateSubtotal(), discountPercent());
     }
 
-    public double discountPercent;
-
     public void completeOrder(){
         completed = true;
     }
@@ -65,11 +64,9 @@ public class Order implements Discountable{
             throw new IllegalArgumentException("Order is not yet completed");
         }
 
-        double subtotal = calculateDiscountedSubtotal();
+        double discount = calculateSubtotal() - calculateDiscountedSubtotal();
 
-        Receipt receipt = new Receipt(subtotal);
-
-        return receipt;
+        return new Receipt(orderNumber, items, discount);
     }
 
     @Override
