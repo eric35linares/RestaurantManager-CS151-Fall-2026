@@ -64,16 +64,16 @@ public String toString(){
     String 
     result = "STAR HOUSE CAFE\n";
     result += "Order #" + orderNumber + "\n";
-    result += "------------------------------\n";
+    result += "--------------------\n";
 
     for(MenuItem item : items){
-        result += item.getName() + " - $" + item.getPrice() + "\n";
+        result += String.format("%s - $%.2f\n", item.getName(), item.getPrice());
     }
     result += "--------------------\n";
-    result += "Subtotal: $" + subtotal + "\n";
-    result += "Discount: -$" + discount + "\n";
-    result += "Tax: $" + calculateTax() + "\n";
-    result += "Tip: $" + tip + "\n";
+    result += String.format("Subtotal: $%.2f\n", subtotal);
+    result += String.format("Discount: -$%.2f\n",discount);
+    result += String.format("Tax: $%.2f\n", calculateTax());
+    result += String.format("Tip: $%.2f\n", tip);
     result += String.format("Total $%.2f\n", calculateTotal());
 
     return result;

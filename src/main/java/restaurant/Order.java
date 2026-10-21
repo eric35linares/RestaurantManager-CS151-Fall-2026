@@ -6,7 +6,7 @@ public class Order implements Discountable{
     private int orderNumber;
     private ArrayList<MenuItem> items;
     private boolean completed;
-    public double discountPercent;
+    private double discountPercent;
 
     public Order(int orderNumber){
         this.orderNumber = orderNumber;
@@ -46,13 +46,18 @@ public class Order implements Discountable{
     }
 
     public void setDiscount(double percent){
-        if(percent >= 0 && percent <= 100 && !completed){
+        if(percent < 0 || percent > 100){
+            throw new IllegalArgumentException("Invalid Discount");
+        }
+
+        if(completed){
+            throw new IllegalArgumentException("Cannot add discount to completed order");
+        }
             discountPercent = percent;
         }
-    }
 
     public double calculateDiscountedSubtotal(){
-        return applyDiscount(calculateSubtotal(), discountPercent());
+        return applyDiscount(calculateSubtotal(), discountPercent);
     }
 
     public void completeOrder(){
