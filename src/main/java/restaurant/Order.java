@@ -60,6 +60,18 @@ public class Order implements Discountable{
         completed = true;
     }
 
+    public Receipt generateReceipt(){
+        if(!completed){
+            throw new IllegalArgumentException("Order is not yet completed");
+        }
+
+        double subtotal = calculateDiscountedSubtotal();
+
+        Receipt receipt = new Receipt(subtotal);
+
+        return receipt;
+    }
+
     @Override
     public String toString(){
         return "Order #" + orderNumber + "\nItems: " + items + "\nCompleted: " + completed;
