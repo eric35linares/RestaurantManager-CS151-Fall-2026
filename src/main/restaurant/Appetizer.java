@@ -28,12 +28,21 @@ public class Appetizer extends MenuItem {
 
     @Override
     public int calculatePrepTime() {
-        return (int) (Math.random() * (MAX_PREP_TIME - MIN_PREP_TIME + 1)) + MIN_PREP_TIME;
+        int prepTime = 5; // Base prep time for appetizers
+        if(portionSize.equalsIgnoreCase(PORTION_SHAREABLE)){
+            prepTime = 7; // Additional time for shareable portions
+        } else if(portionSize.equals(PORTION_FAMILY)) {
+            prepTime = 11; // Additional time for family portions
+        }
+        if (servedHot) {
+            prepTime += 3; // Additional time for hot appetizers
+        }
+        if (dippingSauces.size() > 1) {
+            prepTime+=(dippingSauces.size() - 1); // Additional time for each extra dipping sauce
+        }
+        return prepTime;
     }
 
-    @Override
-    public double calculateCoursePrice() {
-        return getBasePrice() * (1 - getDiscountPercentage() / 100);
-    }
-    
+
+
 }
