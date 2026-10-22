@@ -109,6 +109,36 @@ public abstract class MenuItem implements Discountable{
         return true;
     }
 
+    public boolean addAllergen(String allergen){
+        String normalized = sanitizeText(allergen, "Allergen");
+        if(containsIgnoreCase(allergens, normalized)){
+            return false;
+        }
+        allergens.add(normalized);
+        if(normalized.equalsIgnoreCase("Dairy")){
+            removeMatchingIgnoreCase(dietaryTags, "Dairy-Free");
+            removeMatchingIgnoreCase(dietaryTags, "Vegan");
+        }
+        else if(normalized.equalsIgnoreCase("Eggs")){
+            removeMatchingIgnoreCase(dietaryTags, "Vegan");
+        }
+        else if(normalized.equalsIgnoreCase("Peanuts") || normalized.equalsIgnoreCase("Tree Nuts")){
+            removeMatchingIgnoreCase(dietaryTags, "Nut-Free");
+        }
+        else if(normalized.equalsIgnoreCase("Shellfish")){
+            removeMatchingIgnoreCase(dietaryTags, "Vegan");
+        }
+        else if(normalized.equalsIgnoreCase("Gluten")){
+            removeMatchingIgnoreCase(dietaryTags, "Gluten-Free");
+        }
+
+        return true;
+    }
+
+    protected void removeMatchingIgnoreCase(Collection<String> collection, String value){
+        collection.removeIf(item -> item.equalsIgnoreCase(value));
+    }
+
     protected String sanitizeText(String input, String fieldName){
         if(input == null || input.trim().isEmpty()){
             throw new InvalidMenuItemException(fieldName + " cannot be null or empty");
