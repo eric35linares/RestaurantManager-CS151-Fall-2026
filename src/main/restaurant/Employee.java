@@ -28,6 +28,41 @@ public class Employee {
 
     // Main methods
 
+    public void assignTable(Table newTable) {
+        if (newTable == null) {
+            throw new IllegalArgumentException(
+                "Table cannot be null.");
+        }
+        if (!this.role.equals(SERVER)) {
+            throw new IllegalStateException(
+                "Employee must be SERVER.");
+        }
+        if (assignedTables.size() >= MAX_TABLES) {
+            throw new IllegalStateException(
+                "Employee has maximum " + MAX_TABLES + " tables already.");
+        }
+        assignedTables.add(newTable);
+        newTable.setServer(this);
+    }
+
+    public void releaseTable(Table newTable) {
+        if (!assignedTables.contains(newTable)) {
+            throw new IllegalStateException(
+                "Current employee is not assigned to this table.");
+        }
+        assignedTables.remove(newTable);
+
+    }
+
+    public double calculatePay(double hoursWorked) {
+        if (hoursWorked < 0) {
+            throw new IllegalArgumentException(
+                "Hours worked must be greater than 0.");
+        }
+        double totalPay = hoursWorked * hourlyRate;
+        return totalPay;
+    }
+
     // Setters
 
     public void setRole(String newRole) {
