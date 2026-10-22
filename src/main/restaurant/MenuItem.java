@@ -2,6 +2,7 @@ package restaurant;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.HashMap;
@@ -161,5 +162,64 @@ public abstract class MenuItem implements Discountable{
         }
         return false;
     }
+
+    protected double roundCurrency(double amount){
+        return Math.round(amount * 100.0) / 100.0;
+    }
+
+    //getters and setters
+    
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = sanitizeText(itemId, "Item ID");
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = sanitizeText(name, "Name");
+    }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = sanitizeText(description, "Description");
+    }
+    public double getBasePrice() {
+        return basePrice;
+    }
+    public void setBasePrice(double basePrice) {
+        if(Double.isNaN(basePrice) || Double.isInfinite(basePrice) || basePrice < MINIMUM_PRICE){
+            throw new InvalidMenuItemException("Base price must be a valid number greater than or equal to $" + MINIMUM_PRICE);
+        }
+        this.basePrice = roundCurrency(basePrice);
+    }
+    public int getCalories() {
+        return calories;
+    }
+    public void setCalories(int calories) {
+        if(calories < 0 || calories > 10000){
+            throw new InvalidMenuItemException("Calories must be between 0 and 10,000");
+        }
+        this.calories = calories;
+    }
+    public boolean isAvailable() {
+        return available;
+    }
+    public List<String> getDietaryTags() {
+        return Collections.unmodifiableList(new ArrayList<>(dietaryTags));
+    }
+    public List<String> getAllergens() {
+        return Collections.unmodifiableList(new ArrayList<>(allergens));
+    }
+    public int getTimesOrdered() {
+        return timesOrdered;
+    }
+
+    // add discountable implementation
         
 }
