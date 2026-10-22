@@ -94,7 +94,7 @@ public class Table {
     }
 
     public void setCurrentOrder(Order newOrder) {
-        this.order = newOrder;
+        this.currentOrder = newOrder;
     }
 
     // Getters
