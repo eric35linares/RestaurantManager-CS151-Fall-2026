@@ -43,6 +43,26 @@ public class Appetizer extends MenuItem {
         return prepTime;
     }
 
+    @Override
+    public double calculateCoursePrice() {
+        double multiplier = getPortionPriceMultiplier(this.portionSize);
+        int extraSauces = Math.max(0, this.dippingSauces.size() - 1);
+        double totalPrice = (getBasePrice() * multiplier) + (extraSauces * this.extraSauceCharge);
+        return roundCurrency(totalPrice);
+    }
+    @Override 
+    public String getServingInstructions
+        String tempInstructions = servedHot ? "Serve on a warmed dish." : "Serve chilled.";
+        String sauceInstructions = dippingSauces.isEmpty() ? "no dipping sauces" : " ramekins of " + String.join(", ", dippingSauces);
+        return String.format(
+            "APPETIZER [%s | %d share plates]: %s with %s",
+            portionSize,
+            recommendedSharers,
+            tempInstructions,
+            sauceInstructions
+        );  
+    }
 
+    
 
 }
