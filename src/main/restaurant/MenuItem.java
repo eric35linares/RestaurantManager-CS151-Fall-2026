@@ -135,6 +135,13 @@ public abstract class MenuItem implements Discountable{
         return true;
     }
 
+    public void updateAvailability(boolean isAvailable){
+        this.available = isAvailable;
+        if(!isAvailable){
+            this.discountPercentage = 0.0;
+        }
+    }
+
     protected void removeMatchingIgnoreCase(Collection<String> collection, String value){
         collection.removeIf(item -> item.equalsIgnoreCase(value));
     }
