@@ -1,6 +1,8 @@
-// Employee and Order classes to be added later
+import exceptions.TableUnavailableException;
 
 // A table in the restuarant that can be reserved.
+// Employee and Order classes to be added later
+
 public class Table {
     private static final String AVAILABLE = "AVAILABLE";
     private static final String RESERVED = "RESERVED";
@@ -20,6 +22,57 @@ public class Table {
         this.capacity = capatity;
         this.status = AVAILABLE;
         this.currentPartySize = 0;
+    }
+
+    // Main methods
+
+    // Makes table OCCUPIED
+    public void seat(int size) throws TableUnavailableException {
+        if (status != AVAILABLE) {
+            throw new TableUnavailableException(
+                "Table is " + status);
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException("Party size must be at least 1.");
+        }
+        if (size > capacity) {
+            throw new TableUnavailableException(
+                "Party size too large. Capacity: " + this.capacity);
+        }
+
+        currentPartySize = size;
+        status = OCCUPIED;
+    }
+
+    // Makes table AVAILABLE
+    public void clearTable() throws TableUnavailableException {
+        if (!status.equals(OCCUPIED)) {
+            throw new TableUnavailableException(
+                "Table is not in use. Cannot be cleared");
+        }
+        // TO-DO: if table is unpaid for
+        currentPartySize = 0;
+        status = AVAILABLE;
+        server = null;
+        currentOrder = null;
+    }
+
+    // Makes table AVAILABLE
+    public void cancelReservation() throws TableUnavailableException {
+        if (!status.equals(RESERVED)) {
+            throw new TableUnavailableException(
+                "Table is not reserved. Cannot cancel reservation");
+        }
+        status = AVAILABLE;
+    }
+
+    // Makes table RESERVED
+    public void reserve() throws TableUnavailableException {
+        if (!status.equals(AVAILABLE)) {
+            throw new TableUnavailableException(
+                "Table is not available. Cannot reserve.");
+        }
+        status = RESERVED;
     }
 
     // Setters
