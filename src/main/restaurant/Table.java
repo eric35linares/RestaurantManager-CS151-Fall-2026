@@ -1,3 +1,4 @@
+package restaurant;
 import exceptions.TableUnavailableException;
 
 // A table in the restuarant that can be reserved.
