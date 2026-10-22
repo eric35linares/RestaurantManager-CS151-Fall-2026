@@ -26,7 +26,7 @@ public class Appetizer extends MenuItem {
         if (dippingSauces != null) {
             this.dippingSauces.addAll(dippingSauces);
         }
-        setPortionSize(portionSize);
+        setPortionSizeInternal(portionSize);
         setExtraSauceCharge(extraSauceCharge);
     }
 
@@ -74,7 +74,7 @@ public class Appetizer extends MenuItem {
         double newCalorieFactor = getPortionCalorieMultiplier(validated);
         int baseIndividualCalories = (int) Math.round(getCalories() / oldCalorieFactor);
         setCalories((int) Math.round(baseIndividualCalories * newCalorieFactor));
-        setPortionSize(validated);
+        setPortionSizeInternal(validated);
 
     }
 
@@ -101,4 +101,34 @@ public class Appetizer extends MenuItem {
         }
         throw new InvalidMenuItemException("Invalid portion size: " + portionSize);
     }
+
+    //getters and setters
+
+    public String getPortionSize() {
+        return portionSize;
+    }
+    private void setPortionSizeInternal(String portionSize) {
+        String validated = validatePortionSize(portionSize);
+        this.portionSize = validated;
+        if(validated.equalsIgnoreCase(PORTION_INDIVIDUAL)){
+            this.recommendedSharers = 1;
+        } else if(validated.equalsIgnoreCase(PORTION_SHAREABLE)){
+            this.recommendedSharers = 2;
+        } else if(validated.equalsIgnoreCase(PORTION_FAMILY)){
+            this.recommendedSharers = 4;
+        }
+        
+    }
+    public int getRecommendedSharers() {
+        return recommendedSharers;
+    }
+    public List<String> getDippingSauces() {
+        return Collections.unmodifiableList(new ArrayList<>(dippingSauces));
+    }
+    public boolean isServedHot() {
+        return servedHot;
+    }
+
+
+
 }
