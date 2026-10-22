@@ -28,7 +28,7 @@ public abstract class MenuItem implements Discountable{
     private List<String> allergens;
     private int timesOrdered;
 
-    public menuItem(String itemId, String name, String description, double basePrice, int calories){
+    public MenuItem(String itemId, String name, String description, double basePrice, int calories){
         setItemId(itemId);
         setName(name);
         setDescription(description);
@@ -62,5 +62,67 @@ public abstract class MenuItem implements Discountable{
     
     }
 
+    public void recordOrder(int quantity){
+        if(!this.available){
+            throw new InvalidMenuItemException(
+                "Cannot order '" + this.name + "'because it is currently unavailable"
+            );
+        }
+        if(quantity<=0){
+            throw new InvalidMenuItemException(
+                "Order quantity must be a positive integer"
+            );
+        }
+        this.timesOrdered +=quanity;
+    }
 
+    public boolean addDietaryTag(String tag){
+        String normalized = sanitizeText(tag, "Dietary Tag")
+        if(normalized.equalsIgnoreCase("Vegan")
+            && (containsIgnoreCase(allergens, "Eggs") ||
+                containsIgnoreCase(allergens, "Dairy") ||
+                containsIgnoreCase(allergens, "Shellfish") )){
+                    throw new InvalidMenuItemException(
+                        "Cannot tag '" + this.name + "' as Vegan because it contains animal products"
+                    )
+
+        }
+        if(normalized.equalsIgnoreCase("Dairy-Free")
+            && containsIgnoreCase(allergens, "Eggs")){
+                    throw new InvalidMenuItemException(
+                        "Cannot tag '" + this.name + "' as Dairy-Free because it contains Dairy"
+                    )
+
+        }
+        if(normalized.equalsIgnoreCase("Nut-Free")
+            && (containsIgnoreCase(allergens, "Peanuts") ||
+                containsIgnoreCase(allergens, "Tree Nuts"))){
+                    throw new InvalidMenuItemException(
+                        "Cannot tag '" + this.name + "' as Nut-Free because it contains nut products"
+                    )
+
+        }
+        if(containsIgnoreCase(dietaryTags,  normalized)){
+            return false;
+        }
+        dietaryTags.add(normalized);
+        return true;
+    }
+
+    protected String sanitizeText(String input, String fieldName){
+        if(input == null || input.trim().isEmpty()){
+            throw new InvalidMenuItemException(fieldName + " cannot be null or empty");
+        }
+        return input.trim();
+    }
+
+    protected boolean containsIgnoreCase(Collection<String> collection, String value){
+        for(String item : collection){
+            if(item.equalsIgnoreCase(value)){
+                return true;
+            }
+        }
+        return false;
+    }
+        
 }
