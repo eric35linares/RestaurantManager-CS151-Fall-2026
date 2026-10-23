@@ -78,7 +78,7 @@ public class Appetizer extends MenuItem {
 
     }
 
-    private static String validatePortionSize(String size){
+    private String validatePortionSize(String size){
         String cleaned = sanitizeText(size, "Portion Size");
         if(cleaned.equalsIgnoreCase(PORTION_INDIVIDUAL) || cleaned.equalsIgnoreCase(PORTION_SHAREABLE) || cleaned.equalsIgnoreCase(PORTION_FAMILY)){
             return PORTION_INDIVIDUAL;
@@ -91,7 +91,18 @@ public class Appetizer extends MenuItem {
         }
     }
 
-    private static double getPortionPriceMultiplier(String portionSize) {
+    private double getPortionPriceMultiplier(String portionSize) {
+        if (portionSize.equalsIgnoreCase(PORTION_INDIVIDUAL)) {
+            return 1.0;
+        } else if (portionSize.equalsIgnoreCase(PORTION_SHAREABLE)) {
+            return 1.5;
+        } else if (portionSize.equalsIgnoreCase(PORTION_FAMILY)) {
+            return 2.25;
+        }
+        throw new InvalidMenuItemException("Invalid portion size: " + portionSize);
+    }
+
+    private static double getPortionCalorieMultiplier(String portionSize) {
         if (portionSize.equalsIgnoreCase(PORTION_INDIVIDUAL)) {
             return 1.0;
         } else if (portionSize.equalsIgnoreCase(PORTION_SHAREABLE)) {
