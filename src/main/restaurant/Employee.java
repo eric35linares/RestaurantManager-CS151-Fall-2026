@@ -45,16 +45,12 @@ public class Employee {
         newTable.setServer(this);
     }
 
-    public void releaseTable(Table table) {
-        if (table == null) {
-            throw new IllegalArgumentException(
-                "Table cannot be null.");
-        }
-        if (!assignedTables.contains(table)) {
+    public void releaseTable(Table newTable) {
+        if (!assignedTables.contains(newTable)) {
             throw new IllegalStateException(
                 "Current employee is not assigned to this table.");
         }
-        assignedTables.remove(table);
+        assignedTables.remove(newTable);
 
     }
 
