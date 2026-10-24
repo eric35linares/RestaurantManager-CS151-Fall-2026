@@ -393,25 +393,31 @@ public class MainMenu {
         while (running) {
             clearScreen();
             System.out.println("======= Orders =======");
-            System.out.println("1. ");
-            System.out.println("2. ");
-            System.out.println("3. ");
-            System.out.println("4. ");
+            System.out.println("1. View Order");
+            System.out.println("2. Create Order");
+            System.out.println("3. Add Item");
+            System.out.println("4. Check out");
             System.out.println("5. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
                 switch (choice) {
                     case 1:
+                        viewOrders();
                         // Method 1
                         break;
                     case 2:
+                        createOrder();
                         // Method 2
                         break;
                     case 3:
+                        System.out.println("Coming soon");
+                        pause();
                         // Method 3
                         break;
                     case 4:
+                        System.out.println("Coming soon");
+                        pause();
                         // Method 4
                         break;
                     case 5:
@@ -422,11 +428,49 @@ public class MainMenu {
                             "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
                 pause();
             }
         }
     }
+
+    public void viewOrders(){
+        ArrayList<Order> orders = restaurant.getOrders();
+
+        if(orders.isEmpty()){
+            System.out.println("There are no orders yet.");
+        } else {
+            for(Order order: orders){
+                System.out.println(order);
+            }
+        }
+        pause();
+    }
+
+    public void createOrder() throws TableUnavailableException, LimitException{
+        if(restaurant.getTables().isEmpty()){
+            System.out.println("There are no tables");
+            pause();
+            return;
+        }
+            for(Table table: restaurant.getTables()){
+                System.out.println(table);
+            }
+
+            int tableNumber = readInt("Enter a table number: ");
+
+            for(Table table : restaurant.getTables()){
+                if(table.getTableNumber() == tableNumber){
+                    restaurant.createOrder(table);
+                    System.out.println("Order. created for table " + tableNumber);
+                    pause();
+                    return;
+                }
+            }
+
+            throw new IllegalArgumentException("Table not found");
+    }
+    
 
     // ---------------------- Menu ---------------------- EMMET
     private void itemMenu() {
