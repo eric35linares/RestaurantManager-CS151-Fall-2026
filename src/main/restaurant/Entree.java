@@ -2,11 +2,8 @@ package restaurant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.Collections;
-
-import java.util.Arrays;
+import java.util.List;
 
 public class Entree extends MenuItem {
     // private static final constants
@@ -20,7 +17,7 @@ public class Entree extends MenuItem {
     //private instance fields
     private String proteinType;
     private String cookingTemp;
-    private List<String> sides;
+    private final List<Side> sides;
     private boolean chefSpecial;
     private double chefSpecialMarkup;
 
@@ -98,14 +95,14 @@ public class Entree extends MenuItem {
 
     @Override 
     public double calculateCoursePrice() {
-        return roundCurrency(getBasePrice() + getExtraSidesCharge() + chefSpecial ? chefSpecialMarkup : 0.0);
+        return roundCurrency(getBasePrice() + getSideUpchargeTotal() + (chefSpecial ? chefSpecialMarkup : 0.0));
     }
 
     //=========================================================================
     // Unique methods for Entree
     //=========================================================================
 
-    public void customizeCookingTemp(String cookingTemp) {
+    public final void customizeCookingTemp(String cookingTemp) {
         String cleaned = sanitizeText(cookingTemp, "Cooking Temperature");
         String matched = null;
         for(String valid : VALID_TEMPS){
@@ -151,7 +148,7 @@ public class Entree extends MenuItem {
 
     }
 
-    public void addSide(Side newSide){
+    public final void addSide(Side newSide){
         if(newSide == null || newSide.getName().trim().isEmpty()){
             throw new IllegalArgumentException("New side cannot be null or empty");
         }
@@ -167,10 +164,59 @@ public class Entree extends MenuItem {
 
     public void configureChefSpecial(boolean special, double markup){
         if(special && (Double.isNaN(markup) || markup < 0.0 || markup > 50.0)){
-            throw new IllegalArgumentException("Chef's Special markup must be between $0.00 and $50.00")
+            throw new IllegalArgumentException("Chef's Special markup must be between $0.00 and $50.00");
         }
         this.chefSpecial = special;
         this.chefSpecialMarkup = markup;
     }
+
+    //===================================================================================================
+    // Getters and Setters
+    //===================================================================================================
+
+    public String getProteinType(){
+        return proteinType;
+    }
+    public final void setProteinType(String protein){
+        String cleaned = sanitizeText(protein, "Protein type");
+        String matched = null;
+        for(String valid : VALID_PROTEINS){
+            if(valid.equalsIgnoreCase(cleaned)){
+                matched = valid;
+                break;
+            }
+        }
+        if(matched == null){
+            throw new IllegalArgumentException(
+            "Invalid protein type '" + proteinType + "'. Allowed values: " + String.join(", ", VALID_PROTEINS)
+            );
+        }
+        this.proteinType = matched;
+    }
+
+    public String getCookingTemp(){
+        return cookingTemp;
+    }
+
+    public List<Side> getSides(){
+        return Collections.unmodifiableList(new ArrayList<>(sides));
+    }
+
+    public double getSideUpchargeTotal(){
+        double total = 0.0;
+        for(int i = INCLUDED_SIDES; i < sides.size(); i++){
+            total+=sides.get(i).calculateCoursePrice();
+        }
+        return roundCurrency(total);
+    }
+
+    public boolean isChefSpecial(){
+        return chefSpecial;
+    }
+
+    public double getChefSpecialMarkup(){
+        return chefSpecialMarkup;
+    }
 }
+
 
