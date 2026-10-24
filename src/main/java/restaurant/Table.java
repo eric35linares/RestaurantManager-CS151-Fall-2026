@@ -1,4 +1,5 @@
 package restaurant;
+
 import exceptions.TableUnavailableException;
 
 // A table in the restuarant that can be reserved.
@@ -148,7 +149,7 @@ public class Table {
 
     @Override 
     public String toString() {
-        return "Table: " + tableNumber;
+        return "Table " + tableNumber;
     }
 
 }
