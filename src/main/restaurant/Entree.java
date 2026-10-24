@@ -106,5 +106,33 @@ public class Entree extends MenuItem {
         }
         return roundCurrency(totalPrice);
     }
+
+    //=========================================================================
+    // Unique methods for Entree
+    //=========================================================================
+
+    public void customizeCookingTemp(String cookingTemp) {
+        String cleaned = sanitizeText(cookingTemp, "Cooking Temperature");
+        String matched = null;
+        for(String valid : VALID_TEMPS){
+            if(valid.equalsIgnoreCase(cleaned)){
+                matched = valid;
+                break;
+            }
+        }
+        if(matched == null){
+            throw new IllegalArgumentException("Invalid cooking temperature. Valid options are: " + String.join(", ", VALID_TEMPS));
+        }
+        if(proteinType.equalsIgnoreCase("Chicken") && !matched.equalsIgnoreCase("Well-Done")){
+            throw new IllegalArgumentException("Food safety violation: Poultry entrees must be cooked 'Well-Done' (requested: \"" + matched + "\").");
+        }
+
+        if((proteinType.equalsIgnoreCase("Plant-Based") ||
+           proteinType.equalsIgnoreCase("Pasta"))
+           && (matched.equalsIgnoreCase("Rare") || matched.equalsIgnoreCase("Medium Rare") || matched.equalsIgnoreCase("Medium") || matched.equalsIgnoreCase("Medium Well") || matched.equalsIgnoreCase("Well Done"))){
+            throw new IllegalArgumentException(proteinType + " entrees cannot be ordered '" + matched + "'.");
+        }
+        this.cookingTemp = matched;
+    }
 }
 
