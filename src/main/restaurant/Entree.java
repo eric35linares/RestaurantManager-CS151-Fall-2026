@@ -18,7 +18,7 @@ public class Entree extends MenuItem {
     
     //private instance fields
     private String proteinType;
-    privateString cookingTemp;
+    private String cookingTemp;
     private List<String> sides;
     private double sidePrice;
     private boolean chefSpecial;
@@ -54,7 +54,57 @@ public class Entree extends MenuItem {
 
         }
 
-    }  
+    //=========================================================================
+    // Override abstract methods from MenuItem
+    //=========================================================================
 
-    
+    @Override
+    public int calculatePrepTime() {
+        int basePrepTime = 14;  // Base prep time in minutes
+        if(proteinType.equalsIgnoreCase("Beef") || proteinType.equalsIgnoreCase("Lamb")){
+            basePrepTime += 2; // Extra time for beef and lamb
+        } else if(proteinType.equalsIgnoreCase("Chicken") || proteinType.equalsIgnoreCase("Pork")){
+            basePrepTime += 4; // Less time for fish
+        } else if(proteinType.equalsIgnoreCase("Fish")){
+            basePrepTime -= 1; // Less time for fish
+        } else if(proteinType.equalsIgnoreCase("Plant-Based") || proteinType.equalsIgnoreCase("Pasta")){
+            basePrepTime -= 2; // Extra time for plant-based and pasta
+        }
+
+        if(cookingTemp.equalsIgnoreCase("Well Done")){
+            basePrepTime += 3; // Extra time for well-done
+        } else if(cookingTemp.equalsIgnoreCase("Medium Well")){
+            basePrepTime += 2; // Extra time for medium-well
+        } else if(cookingTemp.equalsIgnoreCase("Medium")){
+            basePrepTime += 1; // Extra time for medium
+        } else if(cookingTemp.equalsIgnoreCase("Rare")){
+            basePrepTime -= 1; // Less time for rare
+        }
+
+        basePrepTime += sides.size() * 2; // Add 2 minutes for each side
+
+        return basePrepTime;
+    }
+
+    @Override
+    public String getServingInstructions() {
+        String sidesText = sides.isEmpty() ? "no sides" : String.join(", ", sides);
+        String specialText = chefSpecial ? "[CHEF SPECIAL] " : "";
+        return String.format(
+            "%sENTREE [%s | Cooking Temp:]%s: Plate protein with %s sides.",
+            specialText,
+            proteinType,
+            cookingTemp,
+            sidesText);
+    }
+
+    @Override 
+    public double calculateCoursePrice() {
+        double totalPrice = getBasePrice() + (sidePrice * sides.size());
+        if(chefSpecial){
+            totalPrice += totalPrice * (chefSpecialMarkup / 100.0);
+        }
+        return roundCurrency(totalPrice);
+    }
+}
 
