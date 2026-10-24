@@ -21,7 +21,7 @@ public Receipt(int orderNumber, ArrayList<MenuItem> items, double discount){
     subtotal = 0;
 
     for(MenuItem item : items){
-        subtotal += item.getPrice();
+        subtotal += item.calculateCoursePrice();
     }
 
     if(discount < 0 || discount > subtotal){
@@ -67,7 +67,7 @@ public String toString(){
     result += "--------------------\n";
 
     for(MenuItem item : items){
-        result += String.format("%s - $%.2f\n", item.getName(), item.getPrice());
+        result += String.format("%s - $%.2f\n", item.getName(), item.calculateCoursePrice());
     }
     result += "--------------------\n";
     result += String.format("Subtotal: $%.2f\n", subtotal);

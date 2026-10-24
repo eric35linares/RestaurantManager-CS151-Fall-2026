@@ -4,6 +4,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 public class OrderJUnitTest{
+
+    private MenuItem createTestItem(String name, double price){
+    return new Entree(
+        "TEST-" + name,
+        name,
+        "Test food item",
+        price,
+        500,
+        "Beef",
+        "Medium",
+        new java.util.ArrayList<Side>(),
+        false,
+        0.0
+    );
+}
+
     @Test
     public void testDiscount(){
 
@@ -62,7 +78,7 @@ public class OrderJUnitTest{
     public void testAddItem(){
         Order order = new Order(8);
 
-        MenuItem burger = new MenuItem("Burger", 12.00);
+        MenuItem burger = createTestItem("Burger", 12.00);
 
         order.addItem(burger);
 
@@ -73,8 +89,8 @@ public class OrderJUnitTest{
     public void testRemoveItem(){
         Order order = new Order(9);
 
-        MenuItem burger = new MenuItem("Burger", 12.00);
-        MenuItem fries = new MenuItem("Fries", 5.00);
+        MenuItem burger = createTestItem("Burger", 12.00);
+        MenuItem fries = createTestItem("Fries", 5.00);
 
         order.addItem(burger);
         order.addItem(fries);
@@ -88,9 +104,9 @@ public class OrderJUnitTest{
     public void testMultipleItems(){
         Order order = new Order(9);
 
-        MenuItem burger = new MenuItem("Burger", 12.00);
-        MenuItem fries = new MenuItem("Fries", 5.00);
-        MenuItem soda = new MenuItem("Soda", 3.00);
+        MenuItem burger = createTestItem("Burger", 12.00);
+        MenuItem fries = createTestItem("Fries", 5.00);
+        MenuItem soda = createTestItem("Soda", 3.00);
 
         order.addItem(burger);
         order.addItem(fries);

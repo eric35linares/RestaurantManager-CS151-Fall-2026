@@ -42,6 +42,9 @@ public class MainMenu {
                     loadSampleData();
                     mainMenu();
                     break;
+                default:
+                    throw new IllegalArgumentException(
+                        "Choose 1, 2, or 3.");
             }
         }
     }
@@ -87,6 +90,9 @@ public class MainMenu {
                 running = false;
                 exitProgram();
                 break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 through 8.");
             }
         }
     }
@@ -122,9 +128,13 @@ public class MainMenu {
                     case 5:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
@@ -138,7 +148,8 @@ public class MainMenu {
     public void addTable() 
         throws DuplicateEntryException, LimitException{
         int seats = readInt("Number of seats: ");
-        Table table = restaurant.addTable(new Table(seats));
+        Table table = new Table(seats);
+        restaurant.addTable(table);
         System.out.println("Table " + table.getTableNumber() + " added");
         pause();
     }
@@ -189,31 +200,74 @@ public class MainMenu {
                     case 6:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 though 6.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
 
     public void viewEmployees() {
-
+        if (restaurant.getEmployees().isEmpty()) {
+            System.out.println("There are no employees yet.");
+        } 
+        else {
+            printEmployees();
+        }
+        pause();
     }
 
-    public void hireEmployees() {
+    public void hireEmployees() 
+        throws DuplicateEntryException, LimitException {
+        String name = readLine("Employee Name: ");
+        String role = chooseRole();
+        double hourlyRate = readDouble("Hourly Rate: $");
 
+        Employee employee = new Employee(name, role, hourlyRate);
+        restaurant.hireEmployee(employee);
+        System.out.println("Hired " + name + " as " + role + " ID #: " + employee.getEmployeeID());
+        pause();
     }
 
     public void fireEmployees() {
-
+        Employee employee = pickEmployee();
+        restaurant.removeEmployee(employee);
+        System.out.println(employee.getName() + " is FIRED.");
+        pause();
     }
 
     public void calculatePay() {
-
+        Employee employee = pickEmployee();
+        double hours = readDouble("Hours worked: ");
+        System.out.println(employee.getName() + " earned $" + (hours * employee.getHourlyRate()));
+        pause();
     }
 
     public void changeEmployeeDetails() {
+        Employee employee = pickEmployee();
+        System.out.println("What do you want to change? (1 = role, 2 = hourly rate)");
+        int choice = readInt("Enter a choice: ");
 
+        switch (choice) {
+            case 1: 
+                String role = chooseRole();
+                employee.setRole(role);
+                System.out.println(employee.getName() + " is now a " + role);
+                break;
+            case 2: 
+                double newPay = readDouble("New pay: $");
+                employee.setHourlyRate(newPay);
+                System.out.println(employee.getName() + " now makes $" + newPay);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 or 2.");
+        }
+        pause();
     }
 
     // ---------------------- Reservations ----------------------
@@ -222,8 +276,8 @@ public class MainMenu {
         while (running) {
             clearScreen();
             System.out.println("======= Reservations =======");
-            System.out.println("1. Make Reservation");
-            System.out.println("2. View Reservations");
+            System.out.println("1. View Reservation");
+            System.out.println("2. Make Reservations");
             System.out.println("3. Check in Reservation");
             System.out.println("4. Cancel Reservation");
             System.out.println("5. Mark No-Show");
@@ -234,10 +288,10 @@ public class MainMenu {
             try {
                 switch (choice) {
                     case 1:
-                        makeReservation();
+                        viewReservations();
                         break;
                     case 2:
-                        viewReservation();
+                        makeReservation();
                         break;
                     case 3:
                         checkInReservation();
@@ -254,34 +308,82 @@ public class MainMenu {
                     case 7:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose through 7.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
 
-    public void makeReservation() {
-
+    public void viewReservations() {
+        if (restaurant.getReservations().isEmpty()) {
+            System.out.println("There are no reservations yet.");
+        }
+        else {
+            printReservations();
+        }
+        pause();
     }
 
-    public void viewReservation() {
-
+    public void makeReservation() 
+        throws TableUnavailableException, LimitException {
+        String name = readLine("Customer Name: ");
+        int partySize = readInt("Party Size: ");
+        restaurant.makeReservation(name, partySize);
+        System.out.println("Reservation made for " + name + " (party of " + partySize + ")");
+        pause();
     }
 
-    public void checkInReservation() {
-
+    public void checkInReservation() 
+        throws TableUnavailableException {
+        String name = readLine("Customer Name: ");
+        int partySize = readInt("Party Size: ");
+        restaurant.seatReservation(name, partySize);
+        System.out.println(name + "'s party has been seated.");
+        pause();
     }
 
-    public void cancelReservation() {
-
+    public void cancelReservation() 
+        throws TableUnavailableException {
+        Reservation reservation = pickReservation();
+        restaurant.cancelReservation(reservation);
+        System.out.println(reservation.getCustomerName() + "'s reservation has been cancelled.");
+        pause();
     }
 
-    public void markNoShow() {
-        
+    public void markNoShow() 
+        throws TableUnavailableException {
+        Reservation reservation = pickReservation();
+        reservation.markNoShow();
+        System.out.println(reservation.getCustomerName() + "'s reservation has been marked as NO-SHOW.");
+        pause();
     }
 
     public void editReservation() {
+        Reservation reservation = pickReservation();
+        System.out.println("What do you want to change? (1 = name, 2 = party size)");
+        int choice = readInt("Enter a choice: ");
+
+        switch (choice) {
+            case 1: 
+                String name = readLine("Customer Name: ");
+                reservation.setCustomerName(name);
+                System.out.println("Reservation is now under " + name);
+                break;
+            case 2: 
+                int newSize = readInt("Party Size: ");
+                reservation.setPartySize(newSize);
+                System.out.println(reservation.getCustomerName() + " now has party of size " + newSize);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 or 2.");
+        }
+        pause();
 
     }
 
@@ -291,36 +393,84 @@ public class MainMenu {
         while (running) {
             clearScreen();
             System.out.println("======= Orders =======");
-            System.out.println("1. ");
-            System.out.println("2. ");
-            System.out.println("3. ");
-            System.out.println("4. ");
+            System.out.println("1. View Order");
+            System.out.println("2. Create Order");
+            System.out.println("3. Add Item");
+            System.out.println("4. Check out");
             System.out.println("5. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
                 switch (choice) {
                     case 1:
+                        viewOrders();
                         // Method 1
                         break;
                     case 2:
+                        createOrder();
                         // Method 2
                         break;
                     case 3:
+                        System.out.println("Coming soon");
+                        pause();
                         // Method 3
                         break;
                     case 4:
+                        System.out.println("Coming soon");
+                        pause();
                         // Method 4
                         break;
                     case 5:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e.getMessage());
+                pause();
             }
         }
     }
+
+    public void viewOrders(){
+        ArrayList<Order> orders = restaurant.getOrders();
+
+        if(orders.isEmpty()){
+            System.out.println("There are no orders yet.");
+        } else {
+            for(Order order: orders){
+                System.out.println(order);
+            }
+        }
+        pause();
+    }
+
+    public void createOrder() throws TableUnavailableException, LimitException{
+        if(restaurant.getTables().isEmpty()){
+            System.out.println("There are no tables");
+            pause();
+            return;
+        }
+            for(Table table: restaurant.getTables()){
+                System.out.println(table);
+            }
+
+            int tableNumber = readInt("Enter a table number: ");
+
+            for(Table table : restaurant.getTables()){
+                if(table.getTableNumber() == tableNumber){
+                    restaurant.createOrder(table);
+                    System.out.println("Order. created for table " + tableNumber);
+                    pause();
+                    return;
+                }
+            }
+
+            throw new IllegalArgumentException("Table not found");
+    }
+    
 
     // ---------------------- Menu ---------------------- EMMET
     private void itemMenu() {
@@ -352,9 +502,13 @@ public class MainMenu {
                     case 5:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
@@ -389,7 +543,7 @@ public class MainMenu {
             restaurant.hireEmployee(new Employee("Emmet", "MANAGER", 50.00));
 
             restaurant.seatWalkIn(2);
-            //restaurant.assignServer(null, null);
+            // TO-DO restaurant.assignServer(null, null);
             restaurant.makeReservation("Jim", 4);
 
         } catch (Exception e) {
@@ -433,4 +587,96 @@ public class MainMenu {
         }
         return value;
     }
+
+    private double readDouble(String prompt) {
+        String line = readLine(prompt);
+        double value = 0.0;
+        try {
+            value = Double.parseDouble(line);
+        } catch (NumberFormatException e) { 
+            System.out.println("Please enter an integer.");
+        }
+        return value;
+    }
+
+    private String chooseRole() {
+        String role = null;
+        System.out.println("======= Choose Role =======");
+        System.out.println("1. SERVER");
+        System.out.println("2. CHEF");
+        System.out.println("3. HOST");
+        System.out.println("4. MANAGER");
+        int choice = readInt("Enter a choice: ");
+        switch (choice) {
+            case 1:
+                role = "SERVER";
+                break;
+            case 2:
+                role = "CHEF";
+                break;
+            case 3:
+                role = "HOST";
+                break;
+            case 4:
+                role = "MANAGER";
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 through 4.");
+        }
+        return role;
+    }
+
+    private void printEmployees() {
+        for (Employee employee : restaurant.getEmployees()) {
+            System.out.println("# " + employee.getEmployeeID()
+                + " | " + employee.getName() 
+                + " | " + employee.getRole() 
+                + " | $" + employee.getHourlyRate()
+                + " | Tables: " + employee.assignedTablesSize());
+        }
+    }
+
+    private Employee pickEmployee() {
+        if (restaurant.getEmployees().isEmpty()) {
+            throw new IllegalStateException(
+                " There are no employees hired yet.");
+        }
+        printEmployees();
+        int id = readInt("Employee ID: ");
+        for (Employee employee : restaurant.getEmployees()) {
+            if (employee.getEmployeeID() == id) {
+                return employee;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No employee has this ID #.");
+    }
+
+    private void printReservations() {
+        for (Reservation reservation : restaurant.getReservations()) {
+            System.out.println("# " + reservation.getReservationID()
+                + " | " + reservation.getCustomerName() 
+                + " | Party of " + reservation.getPartySize() 
+                + " | $" + reservation.getStatus()
+                + " | " + reservation.getAssignedTable());
+        }
+    }
+
+    private Reservation pickReservation() {
+        if (restaurant.getReservations().isEmpty()) {
+            throw new IllegalStateException(
+                " There are no reservations made yet.");
+        }
+        printReservations();
+        int id = readInt("Reservation ID: ");
+        for (Reservation reservation : restaurant.getReservations()) {
+            if (reservation.getReservationID() == id) {
+                return reservation;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No reservation has this ID #.");
+    }
+
 }
