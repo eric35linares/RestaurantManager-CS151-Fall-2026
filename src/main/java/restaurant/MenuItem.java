@@ -24,9 +24,9 @@ public abstract class MenuItem implements Discountable{
     private int calories;
     private boolean available;
     private double discountPercentage;
-    private List<String> dietaryTags;
-    private List<String> allergens;
-    private int timesOrdered;
+    private final List<String> dietaryTags;
+    private final List<String> allergens;
+    private final int timesOrdered;
 
     public MenuItem(String itemId, String name, String description, double basePrice, int calories){
         setItemId(itemId);
