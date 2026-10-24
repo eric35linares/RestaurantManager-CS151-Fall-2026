@@ -56,7 +56,6 @@ public class Dessert extends MenuItem{
         }
     }
 
-    
     public Dessert(
         String itemId,
         String name,
@@ -67,6 +66,46 @@ public class Dessert extends MenuItem{
         boolean nuts){
     this(itemId, name, description, basePrice, calories, sweetness, false, "None", nuts);
         }
+
+    // ===================================================================================================================
+    // Overridden Abstract Methods from MenuItem
+    //====================================================================================================================
     
+    @Override 
+    public int calculatePrepTime(){
+        int prep = 6;
+        if(withIceCream){
+            prep+=1;
+        }
+        prep+=toppings.size();
+        return prep;
+    }
+
+    @Override
+    public double calculateCoursePrice(){
+        double total = getBasePrice();
+        if(withIceCream){
+            total+=ICE_CREAM_UPCHARGE;
+        }
+        total+= toppings.size() * TOPPING_UPCHARGE;
+        return roundCurrency(total);
+    }
+
+    @Override 
+    public String getServingInstructions(){
+        String aLaModeText = withIceCream
+            ? "a la mode with 1 scoop of " + iceCreamFlavor + "ice cream"
+            : "";
+        String toppingsText = toppings.isEmpty()
+            ? ""
+            : "topped with " + String.join(" ,", toppings);  
+    String nutWarning = containsNuts ? " [CONTAINS NUTS]" : "";
+    return String.format(
+        "DESSERT [Sweetness: %d/5]%s: Serve %s, %s.", 
+                sweetnessLevel,
+                nutWarning,
+                aLaModeText,
+                toppingsText);
+    }
     
 }
