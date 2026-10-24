@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.HashMap;
-import java.util.Map;
+
+import exceptions.InvalidMenuItemException;
 
 //Abstract superclass for a menu item
 
@@ -57,25 +56,25 @@ public abstract class MenuItem implements Discountable{
             throw new InvalidMenuItemException(
                 "Adjusted price is ($" + updatedPrice + ") cannot fall below minimum price of $" + MINIMUM_PRICE
             );
-            this.basePrice = updatedPrice;
-            return this.basePrice;
         }
+        this.basePrice = updatedPrice;
+            return this.basePrice;
 
     
     }
 
-    public void recordOrder(int quantity){
+    public void recordOrder(int num){
         if(!this.available){
             throw new InvalidMenuItemException(
                 "Cannot order '" + this.name + "'because it is currently unavailable"
             );
         }
-        if(quantity<=0){
+        if(num<=0){
             throw new InvalidMenuItemException(
                 "Order quantity must be a positive integer"
             );
         }
-        this.timesOrdered +=quanity;
+        this.timesOrdered +=num;
     }
 
     public boolean addDietaryTag(String tag){
@@ -86,14 +85,14 @@ public abstract class MenuItem implements Discountable{
                 containsIgnoreCase(allergens, "Shellfish") )){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Vegan because it contains animal products"
-                    )
+                    );
 
         }
         if(normalized.equalsIgnoreCase("Dairy-Free")
             && containsIgnoreCase(allergens, "Eggs")){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Dairy-Free because it contains Dairy"
-                    )
+                    );
 
         }
         if(normalized.equalsIgnoreCase("Nut-Free")
@@ -101,7 +100,7 @@ public abstract class MenuItem implements Discountable{
                 containsIgnoreCase(allergens, "Tree Nuts"))){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Nut-Free because it contains nut products"
-                    )
+                    );
 
         }
         if(containsIgnoreCase(dietaryTags,  normalized)){
@@ -111,7 +110,7 @@ public abstract class MenuItem implements Discountable{
         return true;
     }
 
-    public boolean addAllergen(String allergen){
+    public final boolean addAllergen(String allergen){
         String normalized = sanitizeText(allergen, "Allergen");
         if(containsIgnoreCase(allergens, normalized)){
             return false;
@@ -229,6 +228,10 @@ public abstract class MenuItem implements Discountable{
     }
     public int getTimesOrdered() {
         return timesOrdered;
+    }
+
+    public double getPrice(){
+        return basePrice;
     }
 
     public double applyDiscount(double originalPrice, double discountPercent){
