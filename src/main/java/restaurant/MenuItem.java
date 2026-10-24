@@ -23,10 +23,9 @@ public abstract class MenuItem implements Discountable{
     private double basePrice;
     private int calories;
     private boolean available;
-    private double discountPercentage;
     private final List<String> dietaryTags;
     private final List<String> allergens;
-    private final int timesOrdered;
+    private int timesOrdered;
 
     public MenuItem(String itemId, String name, String description, double basePrice, int calories){
         setItemId(itemId);
@@ -35,7 +34,6 @@ public abstract class MenuItem implements Discountable{
         setBasePrice(basePrice);
         setCalories(calories);
         this.available = true;
-        this.discountPercentage = 0.0;
         this.dietaryTags = new ArrayList<>();
         this.allergens = new ArrayList<>();
         this.timesOrdered = 0;
@@ -148,9 +146,6 @@ public abstract class MenuItem implements Discountable{
 
     public void updateAvailability(boolean isAvailable){
         this.available = isAvailable;
-        if(!isAvailable){
-            this.discountPercentage = 0.0;
-        }
     }
 
     protected boolean removeMatchingIgnoreCase(Collection<String> collection, String value){
@@ -179,30 +174,30 @@ public abstract class MenuItem implements Discountable{
 
     //getters and setters
     
-    public String getItemId() {
+    public final String getItemId() {
         return itemId;
     }
 
-    public void setItemId(String itemId) {
+    public final void setItemId(String itemId) {
         this.itemId = sanitizeText(itemId, "Item ID");
     }
 
     public String getName() {
         return name;
     }
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name = sanitizeText(name, "Name");
     }
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
-    public void setDescription(String description) {
+    public final void setDescription(String description) {
         this.description = sanitizeText(description, "Description");
     }
-    public double getBasePrice() {
+    public final double getBasePrice() {
         return basePrice;
     }
-    public void setBasePrice(double basePrice) {
+    public final void setBasePrice(double basePrice) {
         if(Double.isNaN(basePrice) || Double.isInfinite(basePrice) || basePrice < MINIMUM_PRICE){
             throw new InvalidMenuItemException("Base price must be a valid number greater than or equal to $" + MINIMUM_PRICE);
         }
@@ -211,7 +206,7 @@ public abstract class MenuItem implements Discountable{
     public int getCalories() {
         return calories;
     }
-    public void setCalories(int calories) {
+    public final void setCalories(int calories) {
         if(calories < 0 || calories > 10000){
             throw new InvalidMenuItemException("Calories must be between 0 and 10,000");
         }
@@ -234,6 +229,7 @@ public abstract class MenuItem implements Discountable{
         return basePrice;
     }
 
+    @Override
     public double applyDiscount(double originalPrice, double discountPercent){
         if(discountPercent < 0.0 || discountPercent > MAX_DISCOUNT_PERCENT){
             throw new InvalidMenuItemException("Discount percentage must be between 0% and " + MAX_DISCOUNT_PERCENT + "%");

@@ -216,7 +216,7 @@ public class Dessert extends MenuItem{
 //=========================================================================
 
     @Override 
-    public boolean equals(object o){
+    public boolean equals(Object o){
         if(this == o){
             return true;
         }
@@ -228,12 +228,23 @@ public class Dessert extends MenuItem{
             return true;
         }
 
-        return super.equals(o
+        return super.equals(o)
                 && sweetnessLevel == dessert.sweetnessLevel
                 && withIceCream == dessert.withIceCream
                 && containsNuts == dessert.containsNuts
-                && iceCreamFlavor.equalsIgnoreCase(dessert.iceCreamFlavor));  
+                && iceCreamFlavor.equalsIgnoreCase(dessert.iceCreamFlavor);  
         
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+            super.hashCode(),
+            sweetnessLevel,
+            withIceCream,
+            iceCreamFlavor.toLowerCase(),
+            containsNuts
+        );
     }
 
     @Override 
