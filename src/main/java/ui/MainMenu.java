@@ -138,7 +138,8 @@ public class MainMenu {
     public void addTable() 
         throws DuplicateEntryException, LimitException{
         int seats = readInt("Number of seats: ");
-        Table table = restaurant.addTable(new Table(seats));
+        Table table = new Table(1, seats);
+        restaurant.addTable(table);
         System.out.println("Table " + table.getTableNumber() + " added");
         pause();
     }
@@ -380,9 +381,9 @@ public class MainMenu {
 
     public void loadSampleData() {
         try {
-            restaurant.addTable(new Table(2));
-            restaurant.addTable(new Table(4));
-            restaurant.addTable(new Table(8));
+            restaurant.addTable(new Table(1, 2));
+            restaurant.addTable(new Table(2, 4));
+            restaurant.addTable(new Table(3, 8));
 
             restaurant.hireEmployee(new Employee("Eric Linares", "SERVER", 15.50));
             restaurant.hireEmployee(new Employee("Anson", "CHEF", 30.00));
