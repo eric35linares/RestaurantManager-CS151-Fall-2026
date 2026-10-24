@@ -35,6 +35,8 @@ public class Side extends MenuItem {
 
     //getters and setters
 
+
+    @Override 
     public String getName() {
         return super.getName();
     }
