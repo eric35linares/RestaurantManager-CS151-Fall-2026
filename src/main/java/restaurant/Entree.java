@@ -220,8 +220,13 @@ public class Entree extends MenuItem {
     }
 
     //===================================================================================================
-    // Object Overrides
+    // Overrides
     //===================================================================================================
+
+    @Override 
+    public double getPrice() {
+        return calculateCoursePrice();
+    }
 
     @Override 
     public boolean equals(Object o){
@@ -239,11 +244,12 @@ public class Entree extends MenuItem {
             && proteinType.equalsIgnoreCase(entree.proteinType)
             && cookingTemp.equalsIgnoreCase(entree.cookingTemp);
     }
-    
-    @Override 
-    public int hashCode(){
+
+    @Override
+    public int hashCode() {
         return Objects.hash(super.hashCode(), proteinType.toLowerCase(), cookingTemp.toLowerCase());
     }
+
 
     @Override 
     public String toString(){
@@ -255,7 +261,7 @@ public class Entree extends MenuItem {
             " | Protein: %s | Doneness: %s | Sides: %s (UpchargeL $%.2f", 
         proteinType,
         cookingTemp,
-        sideNames.isEmpty() ? "None" : String.join(", ", sidesNames),
+        sideNames.isEmpty() ? "None" : String.join(", ", sideNames),
         getSideUpchargeTotal());
     }
 
