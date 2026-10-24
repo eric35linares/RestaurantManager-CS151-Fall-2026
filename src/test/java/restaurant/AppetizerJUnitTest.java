@@ -94,8 +94,5 @@ public class AppetizerJUnitTest {
             app.setExtraSauceCharge(-2.00);
         });
     }
-
-
-
     
 }
