@@ -11,7 +11,6 @@ import java.util.Arrays;
 public class Entree extends MenuItem {
     // private static final constants
     private static final int INCLUDED_SIDES = 2;
-    private static final double DEFAULT_SIDE_PRICE = 3.50;
     private static final int MAX_SIDES = 5;
     private final List<String> VALID_PROTEINS = Arrays.asList(
         "Beef", "Chicken", "Pork", "Fish", "Lamb", "Plant-Based", "Pasta");
@@ -32,21 +31,15 @@ public class Entree extends MenuItem {
                     int calories,
                     String proteinType,
                     String cookingTemp,
-                    List<String> sides,
+                    List<Side> sides,
                     boolean chefSpecial,
                     double chefSpecialMarkup) {
             super(itemId, name, description, basePrice, calories);
             setProteinType(proteinType);
             this.sides = new ArrayList<>();
             if(sides != null){
-                for(String side : sides){
-                    String cleaned = sanitizeText(side, "Side");
-                    if(this.sides.size() >= MAX_SIDES){
-                        throw new InvalidMenuItemException("Cannot add more than " + MAX_SIDES + " sides to an entree");
-                    }
-                    if(!containsIgnoreCase(this.sides, cleaned)){
-                        this.sides.add(cleaned);
-                    }
+                for(Side side : sides){
+                    addSide(side);
                 }
             }
             this.chefSpecial = chefSpecial;
@@ -89,7 +82,11 @@ public class Entree extends MenuItem {
 
     @Override
     public String getServingInstructions() {
-        String sidesText = sides.isEmpty() ? "no sides" : String.join(", ", sides);
+        List<String> sideNames = new ArrayList<>();
+        for(Side side : this.sides){
+            sideNames.add(side.getName());
+        }
+        String sidesText = sideNames.isEmpty() ? "no sides" : String.join(", ", sideNames);
         String specialText = chefSpecial ? "[CHEF SPECIAL] " : "";
         return String.format(
             "%sENTREE [%s | Cooking Temp:]%s: Plate protein with %s sides.",
@@ -132,27 +129,48 @@ public class Entree extends MenuItem {
         this.cookingTemp = matched;
     }
 
-    public void subSide(String currentSide, String newSide){
-        String target = sanitizeText(currentSide, "Current Side");
-        String replacement = sanitizeText(newSide, "New Side");
-        if(!removeMatchingIgnoreCase(sides, target)){
-            throw new IllegalArgumentException("Side \"" + target + "\" not found in the current sides list.");
+    public void subSide(Side currentSide, Side newSide){
+        if(currentSide == null || currentSide.getName().trim().isEmpty()){
+            throw new IllegalArgumentException("Current side cannot be null or empty");
         }
-        int indexToReplace = -1;
-        for(int i = 0; i < sides.size(); i++){
-            if(sides.get(i).equalsIgnoreCase(target)){
-                indexToReplace = i;
-                break;
-            }
+        if(newSide == null || newSide.getName().trim().isEmpty()){
+            throw new IllegalArgumentException("New side cannot be null or empty");
         }
-        if(indexToReplace == -1){
-            throw new IllegalArgumentException("Unexpected error: Side \"" + target + "\" was removed but not found for replacement.");
+        int index = sides.indexOf(currentSide);
+        if(index == -1){
+            throw new IllegalArgumentException("Current side \"" + currentSide + "\" not found in the entree's sides.");
         }
-            sides.set(indexToReplace, replacement);
+        Side removed = sides.set(index, newSide);
+        setCalories(Math.max(0, getCalories() - removed.getCalories() + newSide.getCalories()));
+        for(String allergen: removed.getAllergens()){
+            removeAllergen(allergen);
+        }
+        for(String allergen: newSide.getAllergens()){
+            addAllergen(allergen);
+        }
+
     }
 
-    public void addSide(String newSide){
-        
+    public void addSide(Side newSide){
+        if(newSide == null || newSide.getName().trim().isEmpty()){
+            throw new IllegalArgumentException("New side cannot be null or empty");
+        }
+        if(sides.size() >= MAX_SIDES){
+            throw new IllegalArgumentException("Cannot add more than " + MAX_SIDES + " sides to an entree.");
+        }
+        sides.add(newSide);
+        setCalories(getCalories() + newSide.getCalories());
+        for(String allergen: newSide.getAllergens()){
+            addAllergen(allergen);
+        }
+    }
+
+    public void configureChefSpecial(boolean special, double markup){
+        if(special && (Double.isNaN(markup) || markup < 0.0 || markup > 50.0)){
+            throw new IllegalArgumentException("Chef's Special markup must be between $0.00 and $50.00")
+        }
+        this.chefSpecial = special;
+        this.chefSpecialMarkup = markup;
     }
 }
 

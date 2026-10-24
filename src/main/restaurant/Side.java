@@ -30,5 +30,11 @@ public class Side extends MenuItem {
     public double calculateCoursePrice() {
         return getBasePrice();
     }
+
+    //getters and setters
+
+    public String getName() {
+        return super.getName();
+    }
     
 }

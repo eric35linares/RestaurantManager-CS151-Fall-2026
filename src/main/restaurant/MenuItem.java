@@ -137,6 +137,16 @@ public abstract class MenuItem implements Discountable{
         return true;
     }
 
+    public boolean removeAllergen(String allergen){
+        String normalized = sanitizeText(allergen, "Allergen");
+        return removeMatchingIgnoreCase(allergens, normalized);
+    }
+
+    public boolean removeDietaryTag(String tag){
+        String normalized = sanitizeText(tag, "Dietary Tag");
+        return removeMatchingIgnoreCase(dietaryTags, normalized);
+    }
+
     public void updateAvailability(boolean isAvailable){
         this.available = isAvailable;
         if(!isAvailable){
