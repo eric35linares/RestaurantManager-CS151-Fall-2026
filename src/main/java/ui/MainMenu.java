@@ -42,6 +42,9 @@ public class MainMenu {
                     loadSampleData();
                     mainMenu();
                     break;
+                default:
+                    throw new IllegalArgumentException(
+                        "Choose 1, 2, or 3.");
             }
         }
     }
@@ -87,6 +90,9 @@ public class MainMenu {
                 running = false;
                 exitProgram();
                 break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 through 8.");
             }
         }
     }
@@ -122,9 +128,13 @@ public class MainMenu {
                     case 5:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
@@ -189,31 +199,74 @@ public class MainMenu {
                     case 6:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 though 6.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
 
     public void viewEmployees() {
-
+        if (restaurant.getEmployees().isEmpty()) {
+            System.out.println("There are no employees yet.");
+        } 
+        else {
+            printEmployees();
+        }
+        pause();
     }
 
-    public void hireEmployees() {
+    public void hireEmployees() 
+        throws DuplicateEntryException, LimitException {
+        String name = readLine("Employee Name: ");
+        String role = chooseRole();
+        double hourlyRate = readDouble("Hourly Rate: $");
 
+        Employee employee = new Employee(name, role, hourlyRate);
+        restaurant.hireEmployee(employee);
+        System.out.println("Hired " + name + " as " + role + " ID #: " + employee.getEmployeeID());
+        pause();
     }
 
     public void fireEmployees() {
-
+        Employee employee = pickEmployee();
+        restaurant.removeEmployee(employee);
+        System.out.println(employee.getName() + " is FIRED.");
+        pause();
     }
 
     public void calculatePay() {
-
+        Employee employee = pickEmployee();
+        double hours = readDouble("Hours worked: ");
+        System.out.println(employee.getName() + " earned $" + (hours * employee.getHourlyRate()));
+        pause();
     }
 
     public void changeEmployeeDetails() {
+        Employee employee = pickEmployee();
+        System.out.println("What do you want to change? (1 = role, 2 = hourly rate)");
+        int choice = readInt("Enter a choice: ");
 
+        switch (choice) {
+            case 1: 
+                String role = chooseRole();
+                employee.setRole(role);
+                System.out.println(employee.getName() + " is now a " + role);
+                break;
+            case 2: 
+                double newPay = readDouble("New pay: $");
+                employee.setHourlyRate(newPay);
+                System.out.println(employee.getName() + " now makes $" + newPay);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 or 2.");
+        }
+        pause();
     }
 
     // ---------------------- Reservations ----------------------
@@ -254,9 +307,13 @@ public class MainMenu {
                     case 7:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose through 7.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
@@ -315,9 +372,13 @@ public class MainMenu {
                     case 5:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
@@ -352,9 +413,13 @@ public class MainMenu {
                     case 5:
                         running = false;
                         break;
+                    default:
+                        throw new IllegalArgumentException(
+                            "Choose 1 through 5.");
                 }
             } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+                System.out.println(e);
+                pause();
             }
         }
     }
@@ -389,7 +454,7 @@ public class MainMenu {
             restaurant.hireEmployee(new Employee("Emmet", "MANAGER", 50.00));
 
             restaurant.seatWalkIn(2);
-            //restaurant.assignServer(null, null);
+            // TO-DO restaurant.assignServer(null, null);
             restaurant.makeReservation("Jim", 4);
 
         } catch (Exception e) {
@@ -433,4 +498,70 @@ public class MainMenu {
         }
         return value;
     }
+
+    private double readDouble(String prompt) {
+        String line = readLine(prompt);
+        double value = 0.0;
+        try {
+            value = Double.parseDouble(line);
+        } catch (NumberFormatException e) { 
+            System.out.println("Please enter an integer.");
+        }
+        return value;
+    }
+
+    private String chooseRole() {
+        String role = null;
+        System.out.println("======= Choose Role =======");
+        System.out.println("1. SERVER");
+        System.out.println("2. CHEF");
+        System.out.println("3. HOST");
+        System.out.println("4. MANAGER");
+        int choice = readInt("Enter a choice: ");
+        switch (choice) {
+            case 1:
+                role = "SERVER";
+                break;
+            case 2:
+                role = "CHEF";
+                break;
+            case 3:
+                role = "HOST";
+                break;
+            case 4:
+                role = "MANAGER";
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 through 4.");
+        }
+        return role;
+    }
+
+    private void printEmployees() {
+        for (Employee employee : restaurant.getEmployees()) {
+            System.out.println("# " + employee.getEmployeeID()
+                + " | " + employee.getName() 
+                + " | " + employee.getRole() 
+                + " | $" + employee.getHourlyRate()
+                + " | Tables: " + employee.assignedTablesSize());
+        }
+    }
+
+    private Employee pickEmployee() {
+        if (restaurant.getEmployees().isEmpty()) {
+            throw new IllegalStateException(
+                " There are no employees hired yet.");
+        }
+        printEmployees();
+        int id = readInt("Employee ID: ");
+        for (Employee employee : restaurant.getEmployees()) {
+            if (employee.getEmployeeID() == id) {
+                return employee;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No employee has this ID #.");
+    }
+
 }
