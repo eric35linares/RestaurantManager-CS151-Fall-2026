@@ -2,9 +2,11 @@ package restaurant;
 
 import exceptions.InvalidMenuItemException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+
+import exceptions.InvalidMenuItemException;
 
 public class Appetizer extends MenuItem {
     /*
@@ -20,8 +22,8 @@ public class Appetizer extends MenuItem {
     // Private instance fields
     private String portionSize;
     private int recommendedSharers;
-    private List<String> dippingSauces;
-    private boolean servedHot;
+    private  final List<String> dippingSauces;
+    private final boolean servedHot;
     private double extraSauceCharge;
 
     /**
@@ -251,8 +253,13 @@ public class Appetizer extends MenuItem {
     }
 
     //=========================================================================
-    // Override equals and hashCode methods
+    // Override
     //=========================================================================
+
+    @Override 
+    public double getPrice(){
+        return calculateCoursePrice();
+    }
 
     @Override 
     public boolean equals(Object obj) {
@@ -268,10 +275,11 @@ public class Appetizer extends MenuItem {
 
     }
 
-    @Override 
+    @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), portionSize.toLowerCase(), servedHot);
     }
+
 
     @Override
     public String toString() {
