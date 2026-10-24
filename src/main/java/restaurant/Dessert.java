@@ -210,4 +210,39 @@ public class Dessert extends MenuItem{
         return containsNuts;
     }
 
+//=========================================================================
+// Overrides
+//=========================================================================
+
+    @Override 
+    public boolean equals(object o){
+        if(this == o){
+            return true;
+        }
+        if(!(o instanceof Dessert)){
+            return false;
+        }
+        Dessert dessert = (Dessert) o;
+        if(getItemId().equalsIgnoreCase(dessert.getItemId())){
+            return true;
+        }
+
+        return super.equals(o
+                && sweetnessLevel == dessert.sweetnessLevel
+                && withIceCream == dessert.withIceCream
+                && containsNuts == dessert.containsNuts
+                && iceCreamFlavor.equalsIgnoreCase(dessert.iceCreamFlavor));  
+        
+    }
+
+    @Override 
+    public String toString(){
+        return super.toString() + String.format(
+            " | Sweetness: %d/%d | Ice Cream: %s | Toppings: %s",
+            sweetnessLevel,
+            MAX_SWEETNESS,
+            withIceCream ? iceCreamFlavor : "No",
+            toppings.isEmpty() ? "None" : String.join(", ", toppings));
+    }
+
 }
