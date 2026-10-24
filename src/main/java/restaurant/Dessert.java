@@ -1,11 +1,8 @@
 package restaurant;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import exceptions.*;
 
 public class Dessert extends MenuItem{
 
@@ -107,5 +104,110 @@ public class Dessert extends MenuItem{
                 aLaModeText,
                 toppingsText);
     }
-    
+
+
+    //===================================================================================================================
+    // UNIQUE DESSERT METHODS
+    //===================================================================================================================
+
+    public boolean addTopping(String topping, int toppingCalories, boolean hasNuts){
+        String cleaned = sanitizeText(topping, "Topping");
+        if(toppings.size()>= MAX_TOPPINGS){
+            throw new IllegalArgumentException("Cannot add more than " + MAX_TOPPINGS + "toppings to a dessert");
+        }
+        if(toppingCalories < 0 || toppingCalories > 1000){
+            throw new IllegalArgumentException("Topping calories must be between 0 and 1,000");
+        }
+        toppings.add(cleaned);
+        setCalories(getCalories() + toppingCalories);
+
+        String lower = cleaned.toLowerCase();
+        if(hasNuts || lower.contains("pecan") || lower.contains("walnut")
+             || lower.contains("almond") || lower.contains("hazelnut")
+             || lower.contains("pistachio")){
+            this.containsNuts = true;
+            addAllergen("Tree Nuts");
+        }
+        if(lower.contains("peanut")){
+            this.containsNuts = true;
+            addAllergen("Peanuts");
+        }
+        return true;
+    }
+
+    public void addIceCreamScoop(String flavor){
+        String cleaned = sanitizeText(flavor, "Ice cream flavor");
+        if(cleaned.equalsIgnoreCase("None")){
+            throw new IllegalArgumentException("Please specify an ice cream flavor");
+        }
+        if(!this.withIceCream){
+            setCalories(getCalories() + ICE_CREAM_CALORIES);
+        }
+        this.withIceCream = true;
+        this.iceCreamFlavor = cleaned;
+        addAllergen("Dairy");
+
+        String lower = cleaned.toLowerCase();
+        if(lower.contains("pistachio") || lower.contains("pecan")
+                    || lower.contains("almond")){
+            this.containsNuts = true;
+            addAllergen("Tree Nuts");
+        }
+        if(lower.contains("peanut")){
+            this.containsNuts = true;
+            addAllergen("Peanuts");
+        }
+
+    }
+
+    public boolean removeIceCreamScoop(){
+        if(!this.withIceCream){
+            return false;
+        }
+        this.withIceCream = false;
+        this.iceCreamFlavor = "None";
+        setCalories(Math.max(0, getCalories() - ICE_CREAM_CALORIES));
+        return true;
+    }
+
+
+    public void adjustSweetness(int sweetness){
+        validateSweetness(sweetness);
+        int delta = sweetness - this.sweetnessLevel;
+        int updatedCalories = Math.max(0, getCalories() + (delta * 25));
+        setCalories(updatedCalories);
+        this.sweetnessLevel = sweetness;
+    }
+
+//===================================================================================================================
+// Getters, Setters and Helpers
+//===================================================================================================================
+
+    private static void validateSweetness(int level){
+        if(level < MIN_SWEETNESS || level > MAX_SWEETNESS){
+            throw new IllegalArgumentException(
+                "Sweetness level must be between " + MIN_SWEETNESS + " and " + MAX_SWEETNESS);
+        }
+    }
+
+    public int getSweetnessLevel(){
+        return sweetnessLevel;
+    }
+
+    public List<String> getToppings(){
+        return Collections.unmodifiableList(new ArrayList<>(toppings));
+    }
+
+    public boolean isServedWithIceCream(){
+        return withIceCream;
+    }
+
+    public String getIceCreamFlavor(){
+        return iceCreamFlavor;
+    }
+
+    public boolean isContainsNuts(){
+        return containsNuts;
+    }
+
 }
