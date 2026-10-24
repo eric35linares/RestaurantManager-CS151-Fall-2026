@@ -175,6 +175,29 @@ public class Appetizer extends MenuItem {
         return roundCurrency(totalPrice / recommendedSharers);
     }
 
+    public boolean addDippingSauce(String sauce) {
+        String cleaned = sanitizeText(sauce, "Dipping Sauce");
+        if(dippingSauces.size() >= MAX_DIPPING_SAUCES){
+            throw new InvalidMenuItemException("Cannot add more than " + MAX_DIPPING_SAUCES + " dipping sauces.");
+        }
+        if(containsIgnoreCase(dippingSauces, sauce)){
+            return false;
+        }
+        dippingSauces.add(cleaned);
+        setCalories(getCalories() + 50); // Each dipping sauce adds 50 calories
+        String lower = cleaned.toLowerCase();
+        if(lower.contains("ranch") || lower.contains("cheese") || lower.contains("crema") || lower.contains("aioli")){
+            addAllergen("Dairy");
+        }
+        if(lower.contains("peanut") || lower.contains("almond") || lower.contains("cashew") || lower.contains("hazelnut")){
+            addAllergen("Nuts");
+        }
+        if(lower.contains("soy")){
+            addAllergen("Soy");
+        }
+        return true;
+    }
+
     //getters and setters
 
     public String getPortionSize() {
