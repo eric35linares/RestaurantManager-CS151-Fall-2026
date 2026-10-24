@@ -54,6 +54,8 @@ public class Appetizer extends MenuItem {
             setPortionSizeInternal(portionSize);
             setExtraSauceCharge(extraSauceCharge);
     }
+
+
     //=========================================================================
     // Abstract method implementations
     //=========================================================================
@@ -198,6 +200,16 @@ public class Appetizer extends MenuItem {
         return true;
     }
 
+    public boolean removeDippingSauce(String sauce) {
+        String cleaned = sanitizeText(sauce, "Dipping Sauce");
+        boolean removed = removeMatchingIgnoreCase(dippingSauces, cleaned);
+        if(removed){
+            setCalories(Math.max(0, getCalories() - 50)); // Each dipping sauce adds 50 calories
+        }
+        return removed;
+
+    }
+
     //getters and setters
 
     public String getPortionSize() {
@@ -224,6 +236,19 @@ public class Appetizer extends MenuItem {
     public boolean isServedHot() {
         return servedHot;
     }
+
+    public double getExtraSauceCharge() {
+        return extraSauceCharge;
+    }
+
+    public void setExtraSauceCharge(double extraSauceCharge) {
+        if(Double.isNaN(extraSauceCharge) || Double.isInfinite(extraSauceCharge) || extraSauceCharge < 0){
+            throw new InvalidMenuItemException("Extra sauce charge must be a valid number greater than or equal to $0.00");
+        }
+        this.extraSauceCharge = roundCurrency(extraSauceCharge);
+    }
+
+    
 
 
 

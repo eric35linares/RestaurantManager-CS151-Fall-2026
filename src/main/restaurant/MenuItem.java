@@ -144,8 +144,8 @@ public abstract class MenuItem implements Discountable{
         }
     }
 
-    protected void removeMatchingIgnoreCase(Collection<String> collection, String value){
-        collection.removeIf(item -> item.equalsIgnoreCase(value));
+    protected boolean removeMatchingIgnoreCase(Collection<String> collection, String value){
+        return collection.removeIf(item -> item.equalsIgnoreCase(value));
     }
 
     public String sanitizeText(String input, String fieldName){
@@ -190,10 +190,10 @@ public abstract class MenuItem implements Discountable{
     public void setDescription(String description) {
         this.description = sanitizeText(description, "Description");
     }
-    public double getPrice() {
+    public double getBasePrice() {
         return basePrice;
     }
-    public void setPrice(double basePrice) {
+    public void setBasePrice(double basePrice) {
         if(Double.isNaN(basePrice) || Double.isInfinite(basePrice) || basePrice < MINIMUM_PRICE){
             throw new InvalidMenuItemException("Base price must be a valid number greater than or equal to $" + MINIMUM_PRICE);
         }
@@ -221,6 +221,12 @@ public abstract class MenuItem implements Discountable{
         return timesOrdered;
     }
 
-    // add discountable implementation
+    public double applyDiscount(double originalPrice, double discountPercent){
+        if(discountPercent < 0.0 || discountPercent > MAX_DISCOUNT_PERCENT){
+            throw new InvalidMenuItemException("Discount percentage must be between 0% and " + MAX_DISCOUNT_PERCENT + "%");
+        }
+        double discountedPrice = originalPrice * (1.0 - (discountPercent / 100.0));
+        return roundCurrency(discountedPrice);
+    }
         
 }
