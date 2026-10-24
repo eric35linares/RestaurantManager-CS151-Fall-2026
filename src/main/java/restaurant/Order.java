@@ -46,7 +46,7 @@ public class Order implements Discountable{
     }
 
     public void setDiscount(double percent){
-        if(percent < 0 || percent > 100){
+        if(percent < 0 || percent > 100 || Double.isNaN(percent)){
             throw new IllegalArgumentException("Invalid Discount");
         }
 

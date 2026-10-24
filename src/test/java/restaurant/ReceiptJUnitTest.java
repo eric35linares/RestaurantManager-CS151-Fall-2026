@@ -5,6 +5,22 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 public class ReceiptJUnitTest {
+
+    private MenuItem createTestItem(String name, double price) {
+        return new Entree(
+            "TEST-" + name,
+            name,
+            "Test food item",
+            price,
+            500,
+            "Beef",
+            "Medium",
+            new ArrayList<Side>(),
+            false,
+            0.0
+        );
+    }
+
     
     @Test
     public void testTax(){
@@ -59,7 +75,7 @@ public class ReceiptJUnitTest {
     public void testTaxWithItems(){
         ArrayList<MenuItem> items = new ArrayList<MenuItem>();
 
-        items.add(new MenuItem("Burger", 12.00));
+        items.add(createTestItem("Burger", 12.00));
         Receipt receipt = new Receipt(6, items, 0);
 
         assertEquals(1.2, receipt.calculateTax(), 0.001);
@@ -68,7 +84,7 @@ public class ReceiptJUnitTest {
     @Test 
     public void testDiscountWithITems(){
         ArrayList<MenuItem> items = new ArrayList<MenuItem>();
-        items.add(new MenuItem("Burger", 12.00));
+        items.add(createTestItem("Burger", 12.00));
 
         Receipt receipt = new Receipt(7, items, 2.00);
 
@@ -79,9 +95,9 @@ public class ReceiptJUnitTest {
     public void testTotalWithItems(){
         ArrayList<MenuItem> items = new ArrayList<MenuItem>();
 
-        items.add(new MenuItem("Burger", 12.00));
-        items.add(new MenuItem("Fries", 6.00));
-        items.add(new MenuItem("Soda", 3.00));
+        items.add(createTestItem("Burger", 12.00));
+        items.add(createTestItem("Fries", 6.00));
+        items.add(createTestItem("Soda", 3.00));
 
         Receipt receipt = new Receipt(8, items, 2.00);
         receipt.addTip(5.00);
