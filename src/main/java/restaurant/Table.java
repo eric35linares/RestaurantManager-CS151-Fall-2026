@@ -9,6 +9,7 @@ public class Table {
     private static final String RESERVED = "RESERVED";
     private static final String OCCUPIED = "OCCUPIED";
     private static final int MAX_TABLE_CAPACITY = 8;
+    private static int currentTableNumber = 1;
 
     // Table Attributes
     private final int tableNumber;
@@ -18,8 +19,8 @@ public class Table {
     private Order currentOrder;
 
     // Table Constructor
-    public Table (int tableNumber, int capatity) {
-        this.tableNumber = tableNumber;
+    public Table (int capatity) {
+        this.tableNumber = currentTableNumber++;
         this.capacity = capatity;
         this.status = AVAILABLE;
         this.currentPartySize = 0;
