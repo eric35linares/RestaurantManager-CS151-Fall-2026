@@ -31,7 +31,7 @@ public class Order implements Discountable{
         double total = 0;
 
         for(MenuItem item : items){
-            total += item.getPrice();
+            total += item.calculateCoursePrice();
         }
         return total;
     }
