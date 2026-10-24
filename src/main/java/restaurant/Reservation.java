@@ -8,7 +8,7 @@ public class Reservation {
     private static final String CANCELLED = "CANCELLED";
     private static final String NO_SHOW = "NO_SHOW";
     private static final String SEATED = "SEATED";
-    private static int currentReservationId = 0;
+    private static int currentReservationId = 1;
 
     // Reservation Attributes
     private final int reservationId;

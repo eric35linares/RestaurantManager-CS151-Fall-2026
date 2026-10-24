@@ -10,7 +10,7 @@ public class Employee {
     private static final String HOST = "HOST";
     private static final String MANAGER = "MANAGER";
     private static final int MAX_TABLES = 4;
-    private static int currentID = 0;
+    private static int currentID = 1;
 
     // Employee Attributes
     private final int employeeID;
@@ -24,6 +24,7 @@ public class Employee {
         this.name = name;
         this.role = role;
         this.hourlyRate = hourlyRate;
+        assignedTables = new ArrayList<Table>();
     }
 
     // Main methods
@@ -106,6 +107,13 @@ public class Employee {
 
     public ArrayList<Table> getAssignedTables() {
         return assignedTables;
+    }
+    
+    public int assignedTablesSize() {
+        if (assignedTables == null) {
+            return 0;
+        }
+        return assignedTables.size();
     }
 
     // Class Methods

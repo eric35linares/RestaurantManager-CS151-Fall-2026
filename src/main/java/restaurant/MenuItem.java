@@ -1,5 +1,6 @@
 package restaurant;
 
+import exceptions.InvalidMenuItemException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,7 +59,7 @@ public abstract class MenuItem implements Discountable{
             );
         }
         this.basePrice = updatedPrice;
-            return this.basePrice;
+        return this.basePrice;
 
     
     }
@@ -89,7 +90,7 @@ public abstract class MenuItem implements Discountable{
 
         }
         if(normalized.equalsIgnoreCase("Dairy-Free")
-            && containsIgnoreCase(allergens, "Eggs")){
+            && containsIgnoreCase(allergens, "Dairy")){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Dairy-Free because it contains Dairy"
                     );
