@@ -148,7 +148,7 @@ public abstract class MenuItem implements Discountable{
         return collection.removeIf(item -> item.equalsIgnoreCase(value));
     }
 
-    public String sanitizeText(String input, String fieldName){
+    public static String sanitizeText(String input, String fieldName){
         if(input == null || input.trim().isEmpty()){
             throw new InvalidMenuItemException(fieldName + " cannot be null or empty");
         }

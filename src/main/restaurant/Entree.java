@@ -134,5 +134,24 @@ public class Entree extends MenuItem {
         }
         this.cookingTemp = matched;
     }
+
+    public void subSide(String currentSide, String newSide){
+        String target = sanitizeText(currentSide, "Current Side");
+        String replacement = sanitizeText(newSide, "New Side");
+        if(!removeMatchingIgnoreCase(sides, target)){
+            throw new IllegalArgumentException("Side \"" + target + "\" not found in the current sides list.");
+        }
+        int indexToReplace = -1;
+        for(int i = 0; i < sides.size(); i++){
+            if(sides.get(i).equalsIgnoreCase(target)){
+                indexToReplace = i;
+                break;
+            }
+        }
+        if(indexToReplace == -1){
+            throw new IllegalArgumentException("Unexpected error: Side \"" + target + "\" was removed but not found for replacement.");
+        }
+            sides.set(indexToReplace, replacement);
+    }
 }
 
