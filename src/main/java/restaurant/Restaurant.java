@@ -1,9 +1,7 @@
 package restaurant;
 
 import java.util.ArrayList;
-import exceptions.DuplicateEntryException;
-import exceptions.LimitException;
-import exceptions.TableUnavailableException;
+import exceptions.*;
 
 // The main Restaurant class where all other classes are managed
 
@@ -31,7 +29,7 @@ public class Restaurant {
     // ---------------------- Main Methods ----------------------
 
     // Add/Remove tables
-    public void addTable(Table newTable) 
+    public Table addTable(Table newTable) 
         throws DuplicateEntryException, LimitException {
         if (newTable == null) {
             throw new IllegalArgumentException(
@@ -43,6 +41,7 @@ public class Restaurant {
         }
         checkLimit(tables.size()); // Can throw exception
         tables.add(newTable);
+        return newTable;
     }
 
     public void removeTable(Table table) 
