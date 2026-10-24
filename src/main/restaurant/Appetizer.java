@@ -51,8 +51,9 @@ public class Appetizer extends MenuItem {
             super(itemId, name, description, basePrice, calories);
             this.dippingSauces = new ArrayList<>();
             this.servedHot = servedHot;
+            this.extraSauceCharge = extraSauceCharge;
             setPortionSizeInternal(portionSize);
-            setExtraSauceCharge(extraSauceCharge);
+            
     }
 
 
@@ -242,13 +243,40 @@ public class Appetizer extends MenuItem {
     }
 
     public void setExtraSauceCharge(double extraSauceCharge) {
-        if(Double.isNaN(extraSauceCharge) || Double.isInfinite(extraSauceCharge) || extraSauceCharge < 0){
-            throw new InvalidMenuItemException("Extra sauce charge must be a valid number greater than or equal to $0.00");
+        if(Double.isNaN(extraSauceCharge) || Double.isInfinite(extraSauceCharge) || extraSauceCharge < 0 || extraSauceCharge > 20.0){
+            throw new InvalidMenuItemException("Extra sauce charge must be a valid number greater than or equal to $0.00 and less than or equal to $20.00");
         }
         this.extraSauceCharge = roundCurrency(extraSauceCharge);
     }
 
-    
+    //=========================================================================
+    // Override equals and hashCode methods
+    //=========================================================================
+
+    @Override 
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Appetizer)) return false;
+        Appetizer other = (Appetizer) obj;
+        if(getItemId().equalsIgnoreCase(other.getItemId())){
+            return true;
+        }
+        return super.equals(obj)
+            && servedHot == other.servedHot
+            && portionSize.equalsIgnoreCase(other.portionSize);
+
+    }
+
+    @Override 
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), portionSize.toLowerCase(), servedHot);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + String.format(
+        " | Portion: %s | Recommended Sharers: %d | Served Hot: %b | Dipping Sauces: %s | Extra Sauce Charge: $%.2f", portionSize, recommendedSharers, servedHot, dippingSauces.toString(), extraSauceCharge);
+    }
 
 
 
