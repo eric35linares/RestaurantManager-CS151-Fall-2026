@@ -1,5 +1,6 @@
 package restaurant;
 
+import exceptions.InvalidMenuItemException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,9 +58,9 @@ public abstract class MenuItem implements Discountable{
             throw new InvalidMenuItemException(
                 "Adjusted price is ($" + updatedPrice + ") cannot fall below minimum price of $" + MINIMUM_PRICE
             );
-            this.basePrice = updatedPrice;
-            return this.basePrice;
         }
+        this.basePrice = updatedPrice;
+        return this.basePrice;
 
     
     }
@@ -75,7 +76,7 @@ public abstract class MenuItem implements Discountable{
                 "Order quantity must be a positive integer"
             );
         }
-        this.timesOrdered +=quanity;
+        this.timesOrdered += quantity;
     }
 
     public boolean addDietaryTag(String tag){
@@ -86,14 +87,14 @@ public abstract class MenuItem implements Discountable{
                 containsIgnoreCase(allergens, "Shellfish") )){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Vegan because it contains animal products"
-                    )
+                    );
 
         }
         if(normalized.equalsIgnoreCase("Dairy-Free")
-            && containsIgnoreCase(allergens, "Eggs")){
+            && containsIgnoreCase(allergens, "Dairy")){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Dairy-Free because it contains Dairy"
-                    )
+                    );
 
         }
         if(normalized.equalsIgnoreCase("Nut-Free")
@@ -101,7 +102,7 @@ public abstract class MenuItem implements Discountable{
                 containsIgnoreCase(allergens, "Tree Nuts"))){
                     throw new InvalidMenuItemException(
                         "Cannot tag '" + this.name + "' as Nut-Free because it contains nut products"
-                    )
+                    );
 
         }
         if(containsIgnoreCase(dietaryTags,  normalized)){

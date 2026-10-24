@@ -255,7 +255,7 @@ public class Entree extends MenuItem {
             " | Protein: %s | Doneness: %s | Sides: %s (UpchargeL $%.2f", 
         proteinType,
         cookingTemp,
-        sideNames.isEmpty() ? "None" : String.join(", ", sidesNames),
+        sideNames.isEmpty() ? "None" : String.join(", ", sideNames),
         getSideUpchargeTotal());
     }
 

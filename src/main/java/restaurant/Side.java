@@ -1,5 +1,7 @@
 package restaurant;
 
+import java.util.List;
+
 public class Side extends MenuItem {
     private static final int BASE_PREP_TIME = 5; // in minutes 
 
