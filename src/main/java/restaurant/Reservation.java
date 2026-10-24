@@ -1,5 +1,4 @@
 package restaurant;
-
 import exceptions.TableUnavailableException;
 
 // A reservation to hold a table for a party

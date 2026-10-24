@@ -118,7 +118,7 @@ public class Employee {
         if (obj == null || !(obj instanceof Employee)) {
             return false;
         }
-        return this.name == ((Employee) obj).name;
+        return this.employeeID == ((Employee) obj).employeeID;
     }
 
     @Override 

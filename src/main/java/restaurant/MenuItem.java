@@ -44,6 +44,7 @@ public abstract class MenuItem implements Discountable{
 
     //  abstract methods    
     public abstract int calculatePrepTime();
+    public abstract String getServingInstructions();
     public abstract double calculateCoursePrice();
 
     //  method to change basePrice field by a percentage param
@@ -78,7 +79,7 @@ public abstract class MenuItem implements Discountable{
     }
 
     public boolean addDietaryTag(String tag){
-        String normalized = sanitizeText(tag, "Dietary Tag")
+        String normalized = sanitizeText(tag, "Dietary Tag");
         if(normalized.equalsIgnoreCase("Vegan")
             && (containsIgnoreCase(allergens, "Eggs") ||
                 containsIgnoreCase(allergens, "Dairy") ||
@@ -136,6 +137,16 @@ public abstract class MenuItem implements Discountable{
         return true;
     }
 
+    public boolean removeAllergen(String allergen){
+        String normalized = sanitizeText(allergen, "Allergen");
+        return removeMatchingIgnoreCase(allergens, normalized);
+    }
+
+    public boolean removeDietaryTag(String tag){
+        String normalized = sanitizeText(tag, "Dietary Tag");
+        return removeMatchingIgnoreCase(dietaryTags, normalized);
+    }
+
     public void updateAvailability(boolean isAvailable){
         this.available = isAvailable;
         if(!isAvailable){
@@ -143,11 +154,11 @@ public abstract class MenuItem implements Discountable{
         }
     }
 
-    protected void removeMatchingIgnoreCase(Collection<String> collection, String value){
-        collection.removeIf(item -> item.equalsIgnoreCase(value));
+    protected boolean removeMatchingIgnoreCase(Collection<String> collection, String value){
+        return collection.removeIf(item -> item.equalsIgnoreCase(value));
     }
 
-    protected String sanitizeText(String input, String fieldName){
+    public static String sanitizeText(String input, String fieldName){
         if(input == null || input.trim().isEmpty()){
             throw new InvalidMenuItemException(fieldName + " cannot be null or empty");
         }
@@ -220,6 +231,12 @@ public abstract class MenuItem implements Discountable{
         return timesOrdered;
     }
 
-    // add discountable implementation
+    public double applyDiscount(double originalPrice, double discountPercent){
+        if(discountPercent < 0.0 || discountPercent > MAX_DISCOUNT_PERCENT){
+            throw new InvalidMenuItemException("Discount percentage must be between 0% and " + MAX_DISCOUNT_PERCENT + "%");
+        }
+        double discountedPrice = originalPrice * (1.0 - (discountPercent / 100.0));
+        return roundCurrency(discountedPrice);
+    }
         
 }

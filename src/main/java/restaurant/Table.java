@@ -1,5 +1,4 @@
 package restaurant;
-
 import exceptions.TableUnavailableException;
 
 // A table in the restuarant that can be reserved.
@@ -10,7 +9,6 @@ public class Table {
     private static final String RESERVED = "RESERVED";
     private static final String OCCUPIED = "OCCUPIED";
     private static final int MAX_TABLE_CAPACITY = 8;
-    private static int currentTableNumber = 0;
 
     // Table Attributes
     private final int tableNumber;
@@ -20,8 +18,8 @@ public class Table {
     private Order currentOrder;
 
     // Table Constructor
-    public Table (int capatity) {
-        this.tableNumber = currentTableNumber++;
+    public Table (int tableNumber, int capatity) {
+        this.tableNumber = tableNumber;
         this.capacity = capatity;
         this.status = AVAILABLE;
         this.currentPartySize = 0;
@@ -149,7 +147,7 @@ public class Table {
 
     @Override 
     public String toString() {
-        return "Table " + tableNumber;
+        return "Table: " + tableNumber;
     }
 
 }
