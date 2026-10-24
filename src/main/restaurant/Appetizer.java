@@ -6,29 +6,57 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class Appetizer extends MenuItem {
+    /*
+        * Private static final constants shared across all Appetizer
+        instances.
+    */
 
-    public static final String PORTION_INDIVIDUAL = "Individual";
-    public static final String PORTION_SHAREABLE = "Shareable";
-    public static final String PORTION_FAMILY = "Family";
-    public static final int MAX_DIPPING_SAUCES = 5;
+    private static final String PORTION_INDIVIDUAL = "Individual";
+    private static final String PORTION_SHAREABLE = "Shareable";
+    private static final String PORTION_FAMILY = "Family";
+    private static final int MAX_DIPPING_SAUCES = 5;
 
+    // Private instance fields
     private String portionSize;
     private int recommendedSharers;
     private List<String> dippingSauces;
     private boolean servedHot;
     private double extraSauceCharge;
 
-    public Appetizer(String itemId, String name, String description, double basePrice, int calories, String portionSize, int recommendedSharers, List<String> dippingSauces, boolean servedHot, double extraSauceCharge) {
-        super(itemId, name, description, basePrice, calories);
-        this.dippingSauces = new ArrayList<>();
-        this.servedHot = servedHot;
-        this.recommendedSharers = recommendedSharers;
-        if (dippingSauces != null) {
-            this.dippingSauces.addAll(dippingSauces);
-        }
-        setPortionSizeInternal(portionSize);
-        setExtraSauceCharge(extraSauceCharge);
+    /**
+     * Constructor for Appetizer class, which initializes the fields of the superclass MenuItem and sets the specific fields for Appetizer.
+     * @param itemId    unique item ID
+     * @param name      name of the appetizer
+     * @param description   description of the appetizer
+     * @param basePrice     base price of the appetizer
+     * @param calories      calories in the appetizer
+     * @param portionSize   portion size of the appetizer (Individual, Shareable, Family)             
+     * @param recommendedSharers number of recommended sharers for the appetizer            
+     * @param dippingSauces   list of dipping sauces available for the appetizer
+     * @param servedHot   boolean indicating if the appetizer is served hot 
+     * @param extraSauceCharge  additional charge for each additional dipping sauce  
+     */
+    public Appetizer(
+        String itemId,
+        String name,
+        String description,
+        double basePrice,
+        int calories,
+        String portionSize,
+        int recommendedSharers,
+        List<String> dippingSauces,
+        boolean servedHot,
+        double extraSauceCharge) {
+
+            super(itemId, name, description, basePrice, calories);
+            this.dippingSauces = new ArrayList<>();
+            this.servedHot = servedHot;
+            setPortionSizeInternal(portionSize);
+            setExtraSauceCharge(extraSauceCharge);
     }
+    //=========================================================================
+    // Abstract method implementations
+    //=========================================================================
 
     @Override
     public int calculatePrepTime() {
@@ -68,6 +96,16 @@ public class Appetizer extends MenuItem {
         );
     }
 
+    //=========================================================================
+    // Unique methods for Appetizer class
+    //=========================================================================
+
+    /**
+     * Changes the portion size of the appetizer and adjusts the calorie count accordingly.
+     * @throws InvalidMenuItemException if the new portion size is invalid
+     * @param newPortionSize
+     * @return void
+     */
     public void changePortionSize(String newPortionSize) {
         String validated = validatePortionSize(newPortionSize);
         double oldCalorieFactor = getPortionCalorieMultiplier(this.portionSize);
@@ -77,6 +115,13 @@ public class Appetizer extends MenuItem {
         setPortionSizeInternal(validated);
 
     }
+
+    /**
+     * Validates the portion size input and returns the standardized portion size string.
+     * @param String size (Individual, Shareable, Family)
+     * @return String validated portion size (Individual, Shareable, Family)
+     * @throws InvalidMenuItemException if the portion size is invalid)
+     */
 
     private String validatePortionSize(String size){
         String cleaned = sanitizeText(size, "Portion Size");
@@ -89,7 +134,13 @@ public class Appetizer extends MenuItem {
         }
             throw new InvalidMenuItemException("Portion size must be one of: " + PORTION_INDIVIDUAL + ", " + PORTION_SHAREABLE + ", " + PORTION_FAMILY);
         }
-    }
+    
+    /**
+     * Calculates the price multiplier based on the portion size.
+     * @param portionSize
+     * @return double multiplier
+     * @throws InvalidMenuItemException if the portion size is invalid
+     */
 
     private double getPortionPriceMultiplier(String portionSize) {
         if (portionSize.equalsIgnoreCase(PORTION_INDIVIDUAL)) {
@@ -102,7 +153,13 @@ public class Appetizer extends MenuItem {
         throw new InvalidMenuItemException("Invalid portion size: " + portionSize);
     }
 
-    private static double getPortionCalorieMultiplier(String portionSize) {
+    /**
+     * Calculates the calorie multiplier based on the portion size.
+     * @param portionSize
+     * @return double multiplier
+     * @throws InvalidMenuItemException if the portion size is invalid
+     */
+    private double getPortionCalorieMultiplier(String portionSize) {
         if (portionSize.equalsIgnoreCase(PORTION_INDIVIDUAL)) {
             return 1.0;
         } else if (portionSize.equalsIgnoreCase(PORTION_SHAREABLE)) {
@@ -111,6 +168,11 @@ public class Appetizer extends MenuItem {
             return 2.25;
         }
         throw new InvalidMenuItemException("Invalid portion size: " + portionSize);
+    }
+
+    public double calculateCostPerPerson() {
+        double totalPrice = calculateCoursePrice();
+        return roundCurrency(totalPrice / recommendedSharers);
     }
 
     //getters and setters

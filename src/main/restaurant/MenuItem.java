@@ -44,6 +44,7 @@ public abstract class MenuItem implements Discountable{
 
     //  abstract methods    
     public abstract int calculatePrepTime();
+    public abstract String getServingInstructions();
     public abstract double calculateCoursePrice();
 
     //  method to change basePrice field by a percentage param
@@ -78,7 +79,7 @@ public abstract class MenuItem implements Discountable{
     }
 
     public boolean addDietaryTag(String tag){
-        String normalized = sanitizeText(tag, "Dietary Tag")
+        String normalized = sanitizeText(tag, "Dietary Tag");
         if(normalized.equalsIgnoreCase("Vegan")
             && (containsIgnoreCase(allergens, "Eggs") ||
                 containsIgnoreCase(allergens, "Dairy") ||
@@ -147,7 +148,7 @@ public abstract class MenuItem implements Discountable{
         collection.removeIf(item -> item.equalsIgnoreCase(value));
     }
 
-    protected String sanitizeText(String input, String fieldName){
+    public String sanitizeText(String input, String fieldName){
         if(input == null || input.trim().isEmpty()){
             throw new InvalidMenuItemException(fieldName + " cannot be null or empty");
         }
@@ -189,10 +190,10 @@ public abstract class MenuItem implements Discountable{
     public void setDescription(String description) {
         this.description = sanitizeText(description, "Description");
     }
-    public double getBasePrice() {
+    public double getPrice() {
         return basePrice;
     }
-    public void setBasePrice(double basePrice) {
+    public void setPrice(double basePrice) {
         if(Double.isNaN(basePrice) || Double.isInfinite(basePrice) || basePrice < MINIMUM_PRICE){
             throw new InvalidMenuItemException("Base price must be a valid number greater than or equal to $" + MINIMUM_PRICE);
         }
