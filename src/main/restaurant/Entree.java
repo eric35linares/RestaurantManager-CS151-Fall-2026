@@ -10,7 +10,9 @@ import java.util.Arrays;
 
 public class Entree extends MenuItem {
     // private static final constants
-    private static final int MAX_SIDES = 4;
+    private static final int INCLUDED_SIDES = 2;
+    private static final double DEFAULT_SIDE_PRICE = 3.50;
+    private static final int MAX_SIDES = 5;
     private final List<String> VALID_PROTEINS = Arrays.asList(
         "Beef", "Chicken", "Pork", "Fish", "Lamb", "Plant-Based", "Pasta");
     private static final List<String> VALID_TEMPS = Arrays.asList(
@@ -20,7 +22,6 @@ public class Entree extends MenuItem {
     private String proteinType;
     private String cookingTemp;
     private List<String> sides;
-    private double sidePrice;
     private boolean chefSpecial;
     private double chefSpecialMarkup;
 
@@ -32,7 +33,6 @@ public class Entree extends MenuItem {
                     String proteinType,
                     String cookingTemp,
                     List<String> sides,
-                    double sidePrice,
                     boolean chefSpecial,
                     double chefSpecialMarkup) {
             super(itemId, name, description, basePrice, calories);
@@ -44,10 +44,11 @@ public class Entree extends MenuItem {
                     if(this.sides.size() >= MAX_SIDES){
                         throw new InvalidMenuItemException("Cannot add more than " + MAX_SIDES + " sides to an entree");
                     }
-                    this.sides.add(cleaned);
+                    if(!containsIgnoreCase(this.sides, cleaned)){
+                        this.sides.add(cleaned);
+                    }
                 }
             }
-            this.sidePrice = sidePrice;
             this.chefSpecial = chefSpecial;
             this.chefSpecialMarkup = chefSpecialMarkup;
             customizeCookingTemp(cookingTemp);
@@ -100,11 +101,7 @@ public class Entree extends MenuItem {
 
     @Override 
     public double calculateCoursePrice() {
-        double totalPrice = getBasePrice() + (sidePrice * sides.size());
-        if(chefSpecial){
-            totalPrice += totalPrice * (chefSpecialMarkup / 100.0);
-        }
-        return roundCurrency(totalPrice);
+        return roundCurrency(getBasePrice() + getExtraSidesCharge() + chefSpecial ? chefSpecialMarkup : 0.0);
     }
 
     //=========================================================================
@@ -152,6 +149,10 @@ public class Entree extends MenuItem {
             throw new IllegalArgumentException("Unexpected error: Side \"" + target + "\" was removed but not found for replacement.");
         }
             sides.set(indexToReplace, replacement);
+    }
+
+    public void addSide(String newSide){
+        
     }
 }
 
