@@ -275,8 +275,8 @@ public class MainMenu {
         while (running) {
             clearScreen();
             System.out.println("======= Reservations =======");
-            System.out.println("1. Make Reservation");
-            System.out.println("2. View Reservations");
+            System.out.println("1. View Reservation");
+            System.out.println("2. Make Reservations");
             System.out.println("3. Check in Reservation");
             System.out.println("4. Cancel Reservation");
             System.out.println("5. Mark No-Show");
@@ -287,10 +287,10 @@ public class MainMenu {
             try {
                 switch (choice) {
                     case 1:
-                        makeReservation();
+                        viewReservations();
                         break;
                     case 2:
-                        viewReservation();
+                        makeReservation();
                         break;
                     case 3:
                         checkInReservation();
@@ -318,27 +318,71 @@ public class MainMenu {
         }
     }
 
-    public void makeReservation() {
-
+    public void viewReservations() {
+        if (restaurant.getReservations().isEmpty()) {
+            System.out.println("There are no reservations yet.");
+        }
+        else {
+            printReservations();
+        }
+        pause();
     }
 
-    public void viewReservation() {
-
+    public void makeReservation() 
+        throws TableUnavailableException, LimitException {
+        String name = readLine("Customer Name: ");
+        int partySize = readInt("Party Size: ");
+        restaurant.makeReservation(name, partySize);
+        System.out.println("Reservation made for " + name + " (party of " + partySize + ")");
+        pause();
     }
 
-    public void checkInReservation() {
-
+    public void checkInReservation() 
+        throws TableUnavailableException {
+        String name = readLine("Customer Name: ");
+        int partySize = readInt("Party Size: ");
+        restaurant.seatReservation(name, partySize);
+        System.out.println(name + "'s party has been seated.");
+        pause();
     }
 
-    public void cancelReservation() {
-
+    public void cancelReservation() 
+        throws TableUnavailableException {
+        Reservation reservation = pickReservation();
+        restaurant.cancelReservation(reservation);
+        System.out.println(reservation.getCustomerName() + "'s reservation has been cancelled.");
+        pause();
     }
 
-    public void markNoShow() {
-        
+    public void markNoShow() 
+        throws TableUnavailableException {
+        Reservation reservation = pickReservation();
+        reservation.markNoShow();
+        System.out.println(reservation.getCustomerName() + "'s reservation has been marked as NO-SHOW.");
+        pause();
     }
 
     public void editReservation() {
+        Reservation reservation = pickReservation();
+        System.out.println("What do you want to change? (1 = name, 2 = party size)");
+        int choice = readInt("Enter a choice: ");
+
+        switch (choice) {
+            case 1: 
+                String name = readLine("Customer Name: ");
+                reservation.setCustomerName(name);
+                System.out.println("Reservation is now under " + name);
+                break;
+            case 2: 
+                int newSize = readInt("Party Size: ");
+                reservation.setPartySize(newSize);
+                System.out.println(reservation.getCustomerName() + " now has party of size " + newSize);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                    "Choose 1 or 2.");
+        }
+        pause();
 
     }
 
@@ -562,6 +606,32 @@ public class MainMenu {
         }
         throw new IllegalArgumentException(
             "No employee has this ID #.");
+    }
+
+    private void printReservations() {
+        for (Reservation reservation : restaurant.getReservations()) {
+            System.out.println("# " + reservation.getReservationID()
+                + " | " + reservation.getCustomerName() 
+                + " | Party of " + reservation.getPartySize() 
+                + " | $" + reservation.getStatus()
+                + " | " + reservation.getAssignedTable());
+        }
+    }
+
+    private Reservation pickReservation() {
+        if (restaurant.getReservations().isEmpty()) {
+            throw new IllegalStateException(
+                " There are no reservations made yet.");
+        }
+        printReservations();
+        int id = readInt("Reservation ID: ");
+        for (Reservation reservation : restaurant.getReservations()) {
+            if (reservation.getReservationID() == id) {
+                return reservation;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No reservation has this ID #.");
     }
 
 }
