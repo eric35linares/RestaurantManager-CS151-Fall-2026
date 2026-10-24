@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Entree extends MenuItem {
     // private static final constants
@@ -217,6 +218,47 @@ public class Entree extends MenuItem {
     public double getChefSpecialMarkup(){
         return chefSpecialMarkup;
     }
+
+    //===================================================================================================
+    // Object Overrides
+    //===================================================================================================
+
+    @Override 
+    public boolean equals(Object o){
+        if(this == o){
+            return true;
+        }
+        if(!(o instanceof Entree)){
+            return false;
+        }
+        Entree entree = (Entree) o;
+        if(getItemId().equalsIgnoreCase(entree.getItemId())){
+            return true;
+        }
+        return super.equals(o)
+            && proteinType.equalsIgnoreCase(entree.proteinType)
+            && cookingTemp.equalsIgnoreCase(entree.cookingTemp);
+    }
+    
+    @Override 
+    public int hashCode(){
+        return Objects.hash(super.hashCode(), proteinType.toLowerCase(), cookingTemp.toLowerCase());
+    }
+
+    @Override 
+    public String toString(){
+        List<String> sideNames = new ArrayList<>();
+        for(Side side: sides){
+            sideNames.add(side.getName());
+        }
+        return super.toString() + String.format(
+            " | Protein: %s | Doneness: %s | Sides: %s (UpchargeL $%.2f", 
+        proteinType,
+        cookingTemp,
+        sideNames.isEmpty() ? "None" : String.join(", ", sidesNames),
+        getSideUpchargeTotal());
+    }
+
 }
 
 
