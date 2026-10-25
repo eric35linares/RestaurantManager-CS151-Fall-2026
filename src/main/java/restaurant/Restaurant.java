@@ -1,7 +1,10 @@
 package restaurant;
 
 import java.util.ArrayList;
-import exceptions.*;
+
+import exceptions.DuplicateEntryException;
+import exceptions.LimitException;
+import exceptions.TableUnavailableException;
 
 // The main Restaurant class where all other classes are managed
 
@@ -14,7 +17,7 @@ public class Restaurant {
     private ArrayList<Table> tables;
     private ArrayList<Employee> employees;
     private ArrayList<Order> orders;
-    private ArrayList<Reservation> reservations; 
+    private ArrayList<Reservation> reservations;
     private ArrayList<MenuItem> menuItems;
 
     // ---------------------- Restaurant Constructor ----------------------
@@ -268,37 +271,8 @@ public class Restaurant {
 
     public ArrayList<Reservation> getReservations() {
         return this.reservations;
+
     }
-    // --------------- Menu Item ----------------------
-    public ArrayList<MenuItem> getMenuItems() {
-    return new ArrayList<>(menuItems);
-    }
-
-    public void addMenuItem(MenuItem item)
-        throws DuplicateEntryException, LimitException {
-
-    if (item == null) {
-        throw new IllegalArgumentException("Menu item cannot be null.");
-    }
-
-    for (MenuItem existing : menuItems) {
-        if (existing.getItemId().equals(item.getItemId())) {
-            throw new DuplicateEntryException("Menu item already exists.");
-        }
-    }
-
-    checkLimit(menuItems.size());
-    menuItems.add(item);
-}
-
-public void removeMenuItem(MenuItem item) {
-    if (!menuItems.contains(item)) {
-        throw new IllegalArgumentException("Menu item not found.");
-    }
-
-    menuItems.remove(item);
-}
-
    
     // ---------------------- Class Methods ----------------------
 
@@ -324,7 +298,7 @@ public void removeMenuItem(MenuItem item) {
         if(menuItems == null){
             throw new IllegalArgumentException("Menu item lists cannot be null");
         }
-        this.menuItems = new ArrayList<MenuItem>();
+        this.menuItems = new ArrayList<>();
         for(MenuItem m: menuItems){
                 addMenuItem(m);
           
