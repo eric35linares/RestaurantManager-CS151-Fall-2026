@@ -238,9 +238,11 @@ public class Restaurant {
         if (newName == null) {
             throw new IllegalArgumentException(
                 "Name cannot be null.");
-        }
+        }   
         this.name = newName;
     }
+
+    
 
     // ---------------------- Getters ----------------------
 
@@ -297,6 +299,7 @@ public void removeMenuItem(MenuItem item) {
     menuItems.remove(item);
 }
 
+   
     // ---------------------- Class Methods ----------------------
 
     @Override 
@@ -309,5 +312,72 @@ public void removeMenuItem(MenuItem item) {
         }
         return this.name.equals(((Restaurant) obj).name);
     }
+
+
+    // ----------------------- Menu Item ---------------------------
+
+     public ArrayList<MenuItem> getMenuItems(){
+        return this.menuItems;
+    }
+
+    public void setMenuItem(ArrayList<MenuItem> menuItems){
+        if(menuItems == null){
+            throw new IllegalArgumentException("Menu item lists cannot be null");
+        }
+        this.menuItems = new ArrayList<MenuItem>();
+        for(MenuItem m: menuItems){
+                addMenuItem(m);
+          
+        }
+
+    }
+
+    public void removeMenuItem(MenuItem item){
+        if(item == null || !this.menuItems.remove(item)){
+            throw new IllegalArgumentException(
+                "Menu item cannot be found on the menu"
+            );
+        }
+    }
+
+
+
+    public void addMenuItem(MenuItem item){
+        if(item == null){
+            throw new IllegalArgumentException("Menu item cannot be null");
+        }
+        for(MenuItem existing: this.menuItems){
+            if(existing.equals(item) || existing.getItemId().equalsIgnoreCase(item.getItemId())){
+                try {
+                    throw new DuplicateEntryException(
+                            "Duplicate menu item: '" + item.getName() +"' (ID: " + item.getItemId() + ") already exists."
+                    );
+                } catch (DuplicateEntryException ex) {
+                    System.getLogger(Restaurant.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+            }
+        }
+
+        int sameTypeCount = 0;
+        for(MenuItem existing : this.menuItems){
+            if(existing.getClass().equals(item.getClass())){
+                sameTypeCount++;
+            }
+        }
+        if(sameTypeCount >= MAXIMUM_INSTANCES){
+            try {
+                throw new LimitException(
+                        "Cannot add " + item.getName() + ": maximum limit of " + MAXIMUM_INSTANCES + " instances reached"
+                );
+            } catch (LimitException ex) {
+                System.getLogger(Restaurant.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        }
+
+        this.menuItems.add(item);
+        
+    }
+
+
     
 }

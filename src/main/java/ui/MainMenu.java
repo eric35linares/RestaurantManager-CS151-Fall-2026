@@ -602,26 +602,26 @@ public void checkoutOrder() {
         while (running) {
             clearScreen();
             System.out.println("======= Menu Items =======");
-            System.out.println("1. ");
-            System.out.println("2. ");
-            System.out.println("3. ");
-            System.out.println("4. ");
+            System.out.println("1. View Menu Items");
+            System.out.println("2. Add Menu Items");
+            System.out.println("3. Edit Menu Items");
+            System.out.println("4. Remove Menu Items");
             System.out.println("5. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
                 switch (choice) {
                     case 1:
-                        // Method 1
+                        viewMenuItem();
                         break;
                     case 2:
-                        // Method 2
+                        addMenuItem();
                         break;
                     case 3:
-                        // Method 3
+                        editMenuItem();
                         break;
                     case 4:
-                        // Method 4
+                        removeMenuItem();
                         break;
                     case 5:
                         running = false;
@@ -636,6 +636,42 @@ public void checkoutOrder() {
             }
         }
     }
+
+    public void viewMenuItem(){
+        if(restaurant.getMenuItems().isEmpty()){
+            System.out.println("There are no menu items yet");
+        } else {
+            printMenuItems();
+        }
+        pause();
+    }
+
+    /*
+     public void addMenuItem(){
+        System.out.println("======= Select Course Type =======");
+        System.out.println("1. Appetizer");
+        System.out.println("2. Entree");
+        System.out.println("3. Dessert");
+        System.out.println("4. Side");
+        int typeChoice = readInt("Enter a choice: ");
+
+        String id = readLine("Item ID (e.g. A1, E1, D1, S1): ");
+        String name = readLine("Item Name: ");
+        String description = readLine("Description: ");
+        double basePrice = readDouble("Base Price: $");
+        int calories = readInt("Calories: ");
+    
+
+        MenuItem newItem;
+        switch(typeChoice){
+            case 1:
+                String portionSize = readLine("Portion Size (Individual, Shareable, Family): ");
+                if(portionSize.equalsIgnoreCase("Individual")){
+
+                }
+        }
+    }
+    */
 
     // ---------------------- Restaurant ----------------------
     public void viewSummary() {

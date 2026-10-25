@@ -2,6 +2,7 @@ package restaurant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,14 @@ public class MenuItemJUnitTest{
         assertEquals(10.00, result, 0.001);
     }
 
-    @Test 
-    public void testInvalidDiscount(){
+    @Test
+    public void testInvalidDiscount() {
         MenuItem item = new Side("S3", "Fries", "Crispy fries", 10.00, 300);
-        assertThrows(InvalidMenuItemException.class, () -> {
-           item.applyDiscount(10.00,  90.00);
+
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
+            item.applyDiscount(10.00, 90.0);
         });
+        assertNotNull(ex.getMessage());
     }
 
     @Test 
@@ -39,11 +42,13 @@ public class MenuItemJUnitTest{
     }
 
     @Test
-    public void testAdjustBasePriceTooLow(){
+    public void testAdjustBasePriceTooLow() {
         MenuItem item = new Side("S5", "Fries", "Crispy fries", 1.00, 300);
-        assertThrows(InvalidMenuItemException.class, () -> {
+
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
             item.adjustBasePrice(-80.0);
         });
+        assertNotNull(ex.getMessage());
     }
 
     @Test
@@ -53,15 +58,17 @@ public class MenuItemJUnitTest{
         assertEquals(3, item.getTimesOrdered());
     }
 
-    @Test 
-    public void testRecordOrderWhenUnavailable(){
-        MenuItem item = new Side("S7", "Fries", "Crispy fries", 10.00, 300);
+    @Test
+    public void testRecordOrderWhenUnavailable() {
+        MenuItem item = new Side("S7", "Fries", "Crispy fries", 5.00, 300);
         item.updateAvailability(false);
 
-        assertThrows(InvalidMenuItemException.class, () -> {
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
             item.recordOrder(1);
         });
+        assertNotNull(ex.getMessage());
     }
+
 
     @Test 
     public void testAddDietaryTagandAllergenConflict(){
@@ -71,14 +78,15 @@ public class MenuItemJUnitTest{
         item.addAllergen("Dairy");
         assertFalse(item.getDietaryTags().contains("Vegan"));
     }
-
-    @Test 
-    public void testInvalidBasePrice(){
-        assertThrows(InvalidMenuItemException.class, () -> {
-            new Side("S9", "Fries", "Crispy fries", 0.1, 300);
+    @Test
+    public void testInvalidBasePrice() {
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
+            Side invalidSide = new Side("S9", "Fries", "Crispy fries", 0.10, 300);
+            assertNotNull(invalidSide);
         });
+        assertNotNull(ex.getMessage());
     }
-    
 
+    
 
 }

@@ -2,6 +2,7 @@ package restaurant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -69,11 +70,13 @@ public class DessertJUnitTest {
 
     @Test
     public void testInvalidSweetness() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Dessert("D7", "Cake", "Chocolate cake", 7.00, 500, 6, false);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            Dessert invalidDessert = new Dessert("D7", "Cake", "Chocolate cake", 7.00, 500, 6, false);
+            assertNotNull(invalidDessert);
         });
+        assertNotNull(ex.getMessage());
     }
-
+    
     @Test
     public void testCalculatePrepTime() {
         Dessert dessert = new Dessert("D8", "Lava Cake", "Molten cake", 9.00, 550, 4, true, "Vanilla", false);

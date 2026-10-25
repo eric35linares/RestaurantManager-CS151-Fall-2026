@@ -1,8 +1,12 @@
 package restaurant;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class EntreeJUnitTest {
     
@@ -70,27 +74,31 @@ public class EntreeJUnitTest {
         assertEquals(26.00, entree.calculateCoursePrice(), 0.001);
     }
 
-    @Test
+@Test
     public void testInvalidCookingTemp() {
         ArrayList<Side> sides = new ArrayList<>();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Entree("E6", "Ribeye", "Grilled steak", 25.00, 700, "Beef", "Burned", sides, false, 0.0);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            Entree invalidEntree = new Entree("E6", "Ribeye", "Grilled steak", 25.00, 700, "Beef", "Burned", sides, false, 0.0);
+            assertNotNull(invalidEntree);
         });
+        assertNotNull(ex.getMessage());
     }
 
     @Test
     public void testUnsafeChickenCookingTemp() {
         ArrayList<Side> sides = new ArrayList<>();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Entree("E7", "Roast Chicken", "Herb chicken", 19.00, 550, "Chicken", "Rare", sides, false, 0.0);
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            Entree invalidEntree = new Entree("E7", "Roast Chicken", "Herb chicken", 19.00, 550, "Chicken", "Rare", sides, false, 0.0);
+            assertNotNull(invalidEntree);
         });
+        assertNotNull(ex.getMessage());
     }
 
     @Test
     public void testCalculatePrepTime() {
-        ArrayList<Side> sides = new ArrayList<Side>();
+        ArrayList<Side> sides = new ArrayList<>();
         sides.add(new Side("S1", "Fries", "Crispy fries", 4.00, 300));
 
         Entree entree = new Entree("E8", "Ribeye", "Grilled steak", 25.00, 700, "Beef", "Medium", sides, false, 0.0);

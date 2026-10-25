@@ -3,6 +3,7 @@ package restaurant;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -76,13 +77,15 @@ public class AppetizerJUnitTest {
         assertEquals(8, app.calculatePrepTime());
     }
 
-    @Test
+       @Test
     public void testInvalidPortionSize() {
         ArrayList<String> sauces = new ArrayList<>();
 
-        assertThrows(InvalidMenuItemException.class, () -> {
-            new Appetizer("A8", "Bruschetta", "Toasted bread", 8.00, 250, "Giant", 4, sauces, false, 1.00);
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
+            Appetizer invalidApp = new Appetizer("A8", "Bruschetta", "Toasted bread", 8.00, 250, "Giant", 4, sauces, false, 1.00);
+            assertNotNull(invalidApp);
         });
+        assertNotNull(ex.getMessage());
     }
 
     @Test
@@ -90,9 +93,9 @@ public class AppetizerJUnitTest {
         ArrayList<String> sauces = new ArrayList<>();
         Appetizer app = new Appetizer("A9", "Spring Rolls", "Crispy rolls", 8.00, 300, "Individual", 1, sauces, true, 1.00);
 
-        assertThrows(InvalidMenuItemException.class, () -> {
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
             app.setExtraSauceCharge(-2.00);
         });
+        assertNotNull(ex.getMessage());
     }
-    
 }
