@@ -411,12 +411,12 @@ public class MainMenu {
                         // Method 2
                         break;
                     case 3:
-                        System.out.println("Coming soon");
+                        addItemToOrder();
                         pause();
                         // Method 3
                         break;
                     case 4:
-                        System.out.println("Coming soon");
+                        checkoutOrder();
                         pause();
                         // Method 4
                         break;
@@ -470,6 +470,81 @@ public class MainMenu {
 
             throw new IllegalArgumentException("Table not found");
     }
+
+    public void addToOrder(){
+        ArrayList<Order> orders = restaurant.getOrders();
+        ArrayList<MenuItem> menuItems = restaurant.getMenuItems();
+        if(order.isEmpty()){
+            System.out.println("No orders yet");
+            pause();
+            return;
+        }
+
+        if(menuItems.isEmpty()){
+            System.out.printn("There are not menu items");
+            pause();
+            return;
+        }
+
+        System.out.println("=========Orders=========");
+
+        for(int i = 0; i < menuItem.size(); i++){
+            MenuItem item = menuItems.get(i);
+            System.out.println((i + 1) + ". " item.getName() + " - $" + item.calculateCoursePrice());
+        }
+
+        int itemChoice = readInt("Select a menu item: ");
+        if(itemChoice < 1 || itemChoice > menuItem.size()){
+            throw new IllegalArgumentExceptiomn("Invalid option selected");
+        }
+
+        Menuitem item = menuItem.get(itemChoice - 1);
+
+        order.addItem(item);
+        System.out.println(item.getName() + "added to order.");
+        pause();
+    }
+    public void CheckOutOrder(){
+        ArrayList<Order> orders = restaurant.getOrders();
+
+        if (orders.isEmpty()) {
+        System.out.println("There are no orders");
+        pause();
+        return;
+
+        for(int = 0; i < orders.size(); i++){
+            System.out.println((i+1) ". " + orders.get(i));
+        }
+        int choice = readInt("Select order to checkout.");
+        if(choice < 1 || choice > orders.getsize()){
+            throw new IllegalArgumentException("Invalid order.");
+        }
+               Order order = orders.getChoice(choice - 1);
+                double discount = readDouble("Discount");
+                order.setDiscount(discount);
+                
+                order.completeOrder();
+                Receipt receipt = order.generateReceipt();
+
+                double tip = readDouble("Tip amount : ");
+                receipt.addTip(tip);
+
+                System.out.println(receipt);
+
+                double payment = readDouble("Payment amount: ");
+                receipt.recordPayment(payment);
+
+                System.out.println("Remaining balance: $" + receipt.calculateBalance());
+
+                pause();
+
+
+    }
+
+   
+    }
+
+
     
 
     // ---------------------- Menu ---------------------- EMMET
