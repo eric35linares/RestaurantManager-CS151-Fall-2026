@@ -521,7 +521,8 @@ public class MainMenu {
     pause();
 }
     
-    public void checkoutOrder() {
+   
+public void checkoutOrder() {
     ArrayList<Order> orders = restaurant.getOrders();
 
     if (orders.isEmpty()) {
@@ -544,34 +545,56 @@ public class MainMenu {
 
     Order order = orders.get(choice - 1);
 
-    if(order.isCompleted()){
-        throw new IllegalStateException("This order has already been checked out");
+    if (order.isCompleted()) {
+        throw new IllegalStateException(
+            "This order has already been checked out.");
     }
 
     double discount = readDouble("Discount percentage (0-100): ");
 
-    if (discount < 0 || discount > 100) {
+    if (!Double.isFinite(discount) || discount < 0 || discount > 100) {
         throw new IllegalArgumentException("Invalid discount.");
+    }
+
+    double tip = readDouble("Tip amount: $");
+
+    if (!Double.isFinite(tip) || tip < 0) {
+        throw new IllegalArgumentException("Invalid tip.");
+    }
+
+    double subtotal = order.applyDiscount(
+        order.calculateSubtotal(), discount);
+
+    double total = subtotal + (subtotal * 0.10) + tip;
+
+    System.out.printf("Total due: $%.2f%n", total);
+
+    double payment = readDouble("Payment amount: $");
+
+    if (!Double.isFinite(payment) || payment <= 0) {
+        throw new IllegalArgumentException("Invalid payment.");
+    }
+
+    if (payment + 0.001 < total) {
+        throw new IllegalArgumentException(
+            "Payment does not cover the total.");
     }
 
     order.setDiscount(discount);
     order.completeOrder();
 
     Receipt receipt = order.generateReceipt();
-
-    double tip = readDouble("Tip amount: $");
     receipt.addTip(tip);
+    receipt.recordPayment(payment);
 
     System.out.println(receipt);
 
-    double payment = readDouble("Payment amount: $");
-    receipt.recordPayment(payment);
-
     System.out.printf("Remaining balance: $%.2f%n",
-            receipt.calculateBalance());
+        Math.max(0, receipt.calculateBalance()));
 
     pause();
 }
+
 
     // ---------------------- Menu ---------------------- EMMET
     private void itemMenu() {
