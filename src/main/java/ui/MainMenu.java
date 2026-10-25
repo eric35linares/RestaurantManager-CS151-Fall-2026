@@ -78,7 +78,7 @@ public class MainMenu {
                 orderMenu();
                 break;  
             case 5:
-                itemMenu();
+                //itemMenu();
                 break;
             case 6:
                 viewSummary();
@@ -108,7 +108,8 @@ public class MainMenu {
             System.out.println("2. Add a Table");
             System.out.println("3. Seat a walk-in party");
             System.out.println("4. Clear a Table");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("5. Assign Waiter to Table");
+            System.out.println("6. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
@@ -126,6 +127,9 @@ public class MainMenu {
                         clearTable();
                         break;
                     case 5:
+                        assignWaiter();
+                        break;
+                    case 6:
                         running = false;
                         break;
                     default:
@@ -140,8 +144,12 @@ public class MainMenu {
     }
 
     public void viewTables() {
-        ArrayList<Table> tables = restaurant.getTables();
-        System.out.println("Tables: " + tables);
+        if (restaurant.getTables().isEmpty()) {
+            System.out.println("There are no tables yet.");
+        }
+        else {
+            printTables();
+        }
         pause();
     }
 
@@ -164,6 +172,17 @@ public class MainMenu {
         throws TableUnavailableException {
         int tableNumber = readInt("Table number to clear: ");
         restaurant.clearTable(restaurant.getTables().get(tableNumber));
+    }
+
+    public void assignWaiter() {
+        Table table = pickTable();
+        if (table.getServer() != null) {
+            throw new IllegalStateException(
+                "Table " + table.getTableNumber() + " already has a waiter.");
+        }
+        Employee waiter = pickEmployee();
+        restaurant.assignServer(table, waiter);
+        System.out.println(waiter.getName() + " is no the waiter for table " + table.getTableNumber());
     }
 
     // ---------------------- Employees ----------------------
@@ -594,8 +613,6 @@ public void checkoutOrder() {
 
     pause();
 }
-
-
     // ---------------------- Menu ---------------------- EMMET
     private void itemMenu() {
         boolean running = true;
@@ -664,8 +681,6 @@ public void checkoutOrder() {
 
         MenuItem newItem;
         //not finsihed
-    
-    
 
     // ---------------------- Restaurant ----------------------
     public void viewSummary() {
@@ -692,7 +707,7 @@ public void checkoutOrder() {
             restaurant.addTable(new Table(4));
             restaurant.addTable(new Table(8));
 
-            restaurant.hireEmployee(new Employee("Eric Linares", "SERVER", 15.50));
+            restaurant.hireEmployee(new Employee("Eric", "SERVER", 15.50));
             restaurant.hireEmployee(new Employee("Anson", "CHEF", 30.00));
             restaurant.hireEmployee(new Employee("Emmet", "MANAGER", 50.00));
 
@@ -780,6 +795,32 @@ public void checkoutOrder() {
         }
         return role;
     }
+
+    private void printTables() {
+        for (Table table : restaurant.getTables()) {
+            System.out.println("Table " + table.getTableNumber()
+                + " | Capacity: " + table.getCapacity() 
+                + " | Party Size: " + table.getCurrentPartySize() 
+                + " | " + table.getServer());
+        }
+    }
+
+    private Table pickTable() {
+        if (restaurant.getTables().isEmpty()) {
+            throw new IllegalStateException(
+                " There are no tables in restaurant yet.");
+        }
+        printTables();
+        int tableNumber = readInt("Table #: ");
+        for (Table table : restaurant.getTables()) {
+            if (table.getTableNumber() == tableNumber) {
+                return table;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No table has this #.");
+    }
+
 
     private void printEmployees() {
         for (Employee employee : restaurant.getEmployees()) {
