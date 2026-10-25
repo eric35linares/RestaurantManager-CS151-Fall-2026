@@ -18,19 +18,19 @@ Our Restaurant Manager simulates the daily operations of a restaurant. Users can
 
 The program is text-based, and will look like this.
 
-...
+```text
 Welcome to restaurant simulator. Type EXIT at any time to quit.
 1. Create restaurant
 2. Exit
-3. FOR DEMO: Default restaurant
-...
+```
 
 ## Installation Instructions
 
 **Clone the repo**
-'''sh
-git clone 
-''
+
+```text
+git clone https://github.com/eric35linares/RestaurantManager-CS151-Fall-2026.git
+```
 
 ## Usage
 
@@ -58,7 +58,7 @@ After choosing a restaurant, the main menu has the following choices:
 ## Contributions
 
 | Team Member | Contributions |
-|---|---|---|
+|---|---|
 | Anson | Designed and implemented "Order", "Receipt", "Discountable" interface. Built the orders and checkout screens in the UI. Wrote the JUnit tests. Contributed to the UML diagram. |
-| Emmet	| [@emmet-dobson] | Designed and implemented "MenuItem" abstract class, "Appetizer", "Entree", "Dessert, "Side", "InvalidMenuItemException". Built the menu screen in the UI and menu item management in "Restaurant". Contributed to the UML diagram. |
-| Eric | [@eric35linares] | Designed and implemented "Restaurant", "Table", "Employee", "Reservation", "TableUnavailableException", "DuplicateEntryException". Built the UI/UX structure and the start, main, table, employee, and reservation screens. Wrote the README. Contributed to the UML diagram. |
+| Emmet	| Designed and implemented "MenuItem" abstract class, "Appetizer", "Entree", "Dessert, "Side", "InvalidMenuItemException". Built the menu screen in the UI and menu item management in "Restaurant". Contributed to the UML diagram. |
+| Eric | Designed and implemented "Restaurant", "Table", "Employee", "Reservation", "TableUnavailableException", "DuplicateEntryException". Built the UI/UX structure and the start, main, table, employee, and reservation screens. Wrote the README. Contributed to the UML diagram. |
