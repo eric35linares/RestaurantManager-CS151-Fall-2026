@@ -522,7 +522,7 @@ public class MainMenu {
         pause();
     }
 
-    /*
+    
      public void addMenuItem(){
         System.out.println("======= Select Course Type =======");
         System.out.println("1. Appetizer");
@@ -539,15 +539,9 @@ public class MainMenu {
     
 
         MenuItem newItem;
-        switch(typeChoice){
-            case 1:
-                String portionSize = readLine("Portion Size (Individual, Shareable, Family): ");
-                if(portionSize.equalsIgnoreCase("Individual")){
-
-                }
-        }
-    }
-    */
+        //not finsihed
+    
+    
 
     // ---------------------- Restaurant ----------------------
     public void viewSummary() {
