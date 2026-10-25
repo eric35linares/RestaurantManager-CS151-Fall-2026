@@ -860,7 +860,7 @@ public class MainMenu {
             System.out.println("# " + reservation.getReservationID()
                 + " | " + reservation.getCustomerName() 
                 + " | Party of " + reservation.getPartySize() 
-                + " | $" + reservation.getStatus()
+                + " | " + reservation.getStatus()
                 + " | " + reservation.getAssignedTable());
         }
     }
