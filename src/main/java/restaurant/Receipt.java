@@ -38,7 +38,7 @@ public double calculateTax(){
 }
 
 public void addTip(double amount){
-    if(amount < 0){
+    if(!Double.isFinite(amount) || amount < 0){
         throw new IllegalArgumentException("Tip can not be negative");
     }
     tip = tip + amount;
@@ -49,7 +49,7 @@ public double calculateTotal(){
 }
 
 public void recordPayment(double amount){
-    if(amount <= 0){
+    if(!Double.isFinite(amount) || amount <= 0){
         throw new IllegalArgumentException("Payment must be positive");
     }
     amountPaid = amountPaid + amount;
