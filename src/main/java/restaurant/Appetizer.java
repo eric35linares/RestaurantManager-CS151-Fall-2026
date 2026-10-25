@@ -1,6 +1,5 @@
 package restaurant;
 
-import exceptions.InvalidMenuItemException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -131,7 +130,7 @@ public class Appetizer extends MenuItem {
 
     private String validatePortionSize(String size){
         String cleaned = sanitizeText(size, "Portion Size");
-        if(cleaned.equalsIgnoreCase(PORTION_INDIVIDUAL) || cleaned.equalsIgnoreCase(PORTION_SHAREABLE) || cleaned.equalsIgnoreCase(PORTION_FAMILY)){
+        if(cleaned.equalsIgnoreCase(PORTION_INDIVIDUAL)){
             return PORTION_INDIVIDUAL;
         } else if(cleaned.equalsIgnoreCase(PORTION_SHAREABLE)){
             return PORTION_SHAREABLE;

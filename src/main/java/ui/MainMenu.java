@@ -478,26 +478,26 @@ public class MainMenu {
         while (running) {
             clearScreen();
             System.out.println("======= Menu Items =======");
-            System.out.println("1. ");
-            System.out.println("2. ");
-            System.out.println("3. ");
-            System.out.println("4. ");
+            System.out.println("1. View Menu Items");
+            System.out.println("2. Add Menu Items");
+            System.out.println("3. Edit Menu Items");
+            System.out.println("4. Remove Menu Items");
             System.out.println("5. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
                 switch (choice) {
                     case 1:
-                        // Method 1
+                        viewMenuItem();
                         break;
                     case 2:
-                        // Method 2
+                        addMenuItem();
                         break;
                     case 3:
-                        // Method 3
+                        editMenuItem();
                         break;
                     case 4:
-                        // Method 4
+                        removeMenuItem();
                         break;
                     case 5:
                         running = false;
@@ -511,6 +511,10 @@ public class MainMenu {
                 pause();
             }
         }
+    }
+
+    public void viewMenuItem(){
+        if(restaurant.getMenuItems())
     }
 
     // ---------------------- Restaurant ----------------------

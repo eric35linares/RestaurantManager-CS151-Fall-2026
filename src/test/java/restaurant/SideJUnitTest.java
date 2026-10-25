@@ -1,8 +1,13 @@
 package restaurant;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
 import exceptions.InvalidMenuItemException;
 
 public class SideJUnitTest {
@@ -37,7 +42,7 @@ public class SideJUnitTest {
 
     @Test
     public void testSideWithAllergensConstructor() {
-        ArrayList<String> allergens = new ArrayList<String>();
+        ArrayList<String> allergens = new ArrayList<>();
         allergens.add("Dairy");
         allergens.add("Gluten");
 
@@ -49,8 +54,11 @@ public class SideJUnitTest {
 
     @Test
     public void testInvalidSidePrice() {
-        assertThrows(InvalidMenuItemException.class, () -> {
-            new Side("S6", "Bad Side", "Invalid price", -1.00, 200);
+        InvalidMenuItemException ex = assertThrows(InvalidMenuItemException.class, () -> {
+            Side invalidSide = new Side("S6", "Bad Side", "Invalid price", -1.00, 200);
+            assertNotNull(invalidSide);
         });
+        assertNotNull(ex.getMessage());
     }
+    
 }
