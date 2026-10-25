@@ -646,7 +646,7 @@ public void checkoutOrder() {
         pause();
     }
 
-    /*
+    
      public void addMenuItem(){
         System.out.println("======= Select Course Type =======");
         System.out.println("1. Appetizer");
@@ -663,15 +663,9 @@ public void checkoutOrder() {
     
 
         MenuItem newItem;
-        switch(typeChoice){
-            case 1:
-                String portionSize = readLine("Portion Size (Individual, Shareable, Family): ");
-                if(portionSize.equalsIgnoreCase("Individual")){
-
-                }
-        }
-    }
-    */
+        //not finsihed
+    
+    
 
     // ---------------------- Restaurant ----------------------
     public void viewSummary() {

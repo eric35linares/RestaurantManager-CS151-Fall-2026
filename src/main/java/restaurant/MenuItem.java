@@ -1,6 +1,5 @@
 package restaurant;
 
-import exceptions.InvalidMenuItemException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,11 +7,11 @@ import java.util.List;
 
 import exceptions.InvalidMenuItemException;
 
+
 //Abstract superclass for a menu item
 
 public abstract class MenuItem implements Discountable{
 
-    public static final int MAXIMUM_INSTANCES = 100;
     public static final double MINIMUM_PRICE = 0.50;
     public static final double MAX_DISCOUNT_PERCENT = 80.0;
 
