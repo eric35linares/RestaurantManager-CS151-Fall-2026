@@ -176,8 +176,8 @@ public class Restaurant {
                 "Invalid table.");
         }
         Employee server = table.getServer();
+        table.clearTable();
         if (server != null) {
-            table.clearTable();
             server.releaseTable(table);
         }
     }
@@ -273,20 +273,6 @@ public class Restaurant {
         return this.reservations;
 
     }
-   
-    // ---------------------- Class Methods ----------------------
-
-    @Override 
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || !(obj instanceof Restaurant)) {
-            return false;
-        }
-        return this.name.equals(((Restaurant) obj).name);
-    }
-
 
     // ----------------------- Menu Item ---------------------------
 
@@ -313,8 +299,6 @@ public class Restaurant {
             );
         }
     }
-
-
 
     public void addMenuItem(MenuItem item){
         if(item == null){
@@ -352,6 +336,26 @@ public class Restaurant {
         
     }
 
+    // ---------------------- Class Methods ----------------------
 
-    
+    @Override 
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || !(obj instanceof Restaurant)) {
+            return false;
+        }
+        return this.name.equals(((Restaurant) obj).name);
+    }
+
+    @Override
+    public String toString() {
+        return "Restaurant: " + name
+            + " [tables=" + tables.size()
+            + ", employees=" + employees.size()
+            + ", reservations=" + reservations.size()
+            + ", orders=" + orders.size() + "]";
+    }
+
 }

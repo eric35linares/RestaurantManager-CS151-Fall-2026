@@ -19,9 +19,13 @@ public class Table {
     private Order currentOrder;
 
     // Table Constructor
-    public Table (int capatity) {
+    public Table (int capacity) {
+        if (capacity < 1 || capacity > MAX_TABLE_CAPACITY) {
+            throw new IllegalArgumentException(
+                "Capacity must be between 1 and " + MAX_TABLE_CAPACITY);
+        }
         this.tableNumber = currentTableNumber++;
-        this.capacity = capatity;
+        this.capacity = capacity;
         this.status = AVAILABLE;
         this.currentPartySize = 0;
     }
@@ -148,7 +152,8 @@ public class Table {
 
     @Override 
     public String toString() {
-        return "Table: " + tableNumber;
+        return "Table: " + tableNumber + " [capacity=" + capacity
+            + ", status=" + status + ", party=" + currentPartySize + "]";
     }
 
 }

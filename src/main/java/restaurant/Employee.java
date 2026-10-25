@@ -131,7 +131,9 @@ public class Employee {
 
     @Override 
     public String toString() {
-        return "Employee: " + name;
+        return "Employee #" + employeeID + " [name=" + name 
+            + ", role=" + role + ", pay rate=" + hourlyRate
+            + ", tables=" + assignedTablesSize() + "]";
     }
     
 }

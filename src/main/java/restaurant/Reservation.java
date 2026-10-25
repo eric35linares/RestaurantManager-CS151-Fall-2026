@@ -61,7 +61,7 @@ public class Reservation {
     // Setters
 
     public void setPartySize(int newPartySize) {
-        if (newPartySize < 0) {
+        if (newPartySize <= 0) {
             throw new IllegalArgumentException(
                 "Party size must be at least 1.");
         }
@@ -113,7 +113,8 @@ public class Reservation {
 
     @Override 
     public String toString() {
-        return "Reservation: " + reservationId;
+        return "Reservation #" + reservationId + " [name=" + customerName 
+            + ", party size=" + partySize + ", status=" + status + "]";
     }
 
 }
