@@ -114,4 +114,45 @@ public class OrderJUnitTest{
 
         assertEquals(20.00, order.calculateSubtotal(), 0.001);
     }
+
+    @Test
+    public void testAddItemAfterCompletion(){
+        Order order = new Order(1);
+        order.completeOrder();
+
+        assertThrows(IllegalStateException.class, () ->{
+            order.addItem(null);
+        });
+    }
+
+    @Test
+    public void testRemoveItemAfterCompletion(){
+        Order order = new Order(1);
+        order.completeOrder();
+
+        assertThrows(IllegalStateException.class, () ->{
+            order.removeItem(null);
+        });
+    }
+
+    @Test
+    public void testDiscountAfterCompletion(){
+        Order order = new Order(1);
+        order.completeOrder();
+
+        assertThrows(IllegalArgumentException.class, () ->{
+            order.setDiscount(10);
+        });
+    }
+
+    @Test
+    void testNullItem(){
+        Order order = new Order(1);
+        
+        assertThrows(IllegalArgumentException.class, () ->{
+            order.addItem(null);
+        });
+
+
+    }
 }

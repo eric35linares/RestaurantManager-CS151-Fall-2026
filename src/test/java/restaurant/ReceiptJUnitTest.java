@@ -104,4 +104,20 @@ public class ReceiptJUnitTest {
 
         assertEquals(25.90, receipt.calculateTotal(), 0.001);
     }
+
+    @Test
+    void testInvalidPayment(){
+        Order order = new Order(1);
+        order.completeOrder();
+
+        Receipt receipt = order.generateReceipt();
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            receipt.recordPayment(-5);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            receipt.recordPayment(0);
+        });
+    }
 }
