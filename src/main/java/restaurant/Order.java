@@ -16,15 +16,29 @@ public class Order implements Discountable{
     }
 
     public void addItem(MenuItem item){
-        if(!completed){
-            items.add(item);
-        }
+        if(completed){
+        throw new IllegalStateException("Order is already completed");
+    }
+
+    if(item == null){
+        throw new IllegalArgumentException("Item cannot be null");
+    }
+
+    if(items.size() >= 100){
+        throw new IllegalStateException("Order item limit reached");
+    }
+
+    items.add(item);
     }
 
     public void removeItem(MenuItem item){
-        if(!completed){
-            items.remove(item);
-        }
+        if(completed){
+            throw new IllegalStateException("Order is already completed");
+     }
+
+        if(!items.remove(item)){
+            throw new IllegalArgumentException("Item not found in order");
+     }
     }
 
     public double calculateSubtotal(){
@@ -46,7 +60,7 @@ public class Order implements Discountable{
     }
 
     public void setDiscount(double percent){
-        if(percent < 0 || percent > 100 || Double.isNaN(percent)){
+        if(percent < 0 || percent > 100 || !Double.isFinite(percent)){
             throw new IllegalArgumentException("Invalid Discount");
         }
 
@@ -63,6 +77,11 @@ public class Order implements Discountable{
     public void completeOrder(){
         completed = true;
     }
+
+    public boolean isCompleted(){
+    return completed;
+}
+
 
     public Receipt generateReceipt(){
         if(!completed){
