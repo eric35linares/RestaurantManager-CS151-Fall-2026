@@ -514,8 +514,40 @@ public class MainMenu {
     }
 
     public void viewMenuItem(){
-        if(restaurant.getMenuItems())
+        if(restaurant.getMenuItems().isEmpty()){
+            System.out.println("There are no menu items yet");
+        } else {
+            printMenuItems();
+        }
+        pause();
     }
+
+    /*
+     public void addMenuItem(){
+        System.out.println("======= Select Course Type =======");
+        System.out.println("1. Appetizer");
+        System.out.println("2. Entree");
+        System.out.println("3. Dessert");
+        System.out.println("4. Side");
+        int typeChoice = readInt("Enter a choice: ");
+
+        String id = readLine("Item ID (e.g. A1, E1, D1, S1): ");
+        String name = readLine("Item Name: ");
+        String description = readLine("Description: ");
+        double basePrice = readDouble("Base Price: $");
+        int calories = readInt("Calories: ");
+    
+
+        MenuItem newItem;
+        switch(typeChoice){
+            case 1:
+                String portionSize = readLine("Portion Size (Individual, Shareable, Family): ");
+                if(portionSize.equalsIgnoreCase("Individual")){
+
+                }
+        }
+    }
+    */
 
     // ---------------------- Restaurant ----------------------
     public void viewSummary() {
