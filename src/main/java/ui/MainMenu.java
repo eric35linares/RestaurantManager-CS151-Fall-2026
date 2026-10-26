@@ -1,18 +1,33 @@
 package ui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-import exceptions.*;
-import restaurant.*;
+import exceptions.DuplicateEntryException;
+import exceptions.LimitException;
+import exceptions.TableUnavailableException;
+import restaurant.Appetizer;
+import restaurant.Dessert;
+import restaurant.Employee;
+import restaurant.Entree;
+import restaurant.MenuItem;
+import restaurant.Order;
+import restaurant.Receipt;
+import restaurant.Reservation;
+import restaurant.Restaurant;
+import restaurant.Side;
+import restaurant.Table;
 
 public class MainMenu {
     private final String EXIT = "EXIT";
     private static final Scanner scanner = new Scanner(System.in);
     private Restaurant restaurant;
+    private boolean sampleMenuLoaded;
 
     public MainMenu() {
         this.restaurant = null;
+        this.sampleMenuLoaded = false;
         run();
     }
 
@@ -618,76 +633,497 @@ public class MainMenu {
         pause();
     }
 
-    /** 
-    // ---------------------- Menu ---------------------- 
+
+// ---------------------- Menu ---------------------- EMMET
     private void itemMenu() {
         boolean running = true;
         while (running) {
             clearScreen();
             System.out.println("======= Menu Items =======");
-            System.out.println("1. View Menu Items");
-            System.out.println("2. Add Menu Items");
-            System.out.println("3. Edit Menu Items");
-            System.out.println("4. Remove Menu Items");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("1. View Menu");
+            System.out.println("2. Inspect Menu Item");
+            System.out.println("3. Add Menu Item");
+            System.out.println("4. Edit Menu Item");
+            System.out.println("5. Remove Menu Item");
+            System.out.println("6. Load Sample Menu");
+            System.out.println("7. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
                 switch (choice) {
                     case 1:
-                        viewMenuItem();
+                        viewMenu();
                         break;
                     case 2:
-                        addMenuItem();
+                        inspectMenuItem();
                         break;
                     case 3:
-                        editMenuItem();
+                        addMenuItem();
                         break;
                     case 4:
-                        removeMenuItem();
+                        editMenuItem();
                         break;
                     case 5:
+                        removeMenuItem();
+                        break;
+                    case 6:
+                        loadSampleMenu();
+                        break;
+                    case 7:
                         running = false;
                         break;
                     default:
-                        throw new IllegalArgumentException(
-                            "Choose 1 through 5.");
+                        throw new IllegalArgumentException("Choose 1 through 7.");
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("Error: " + e.getMessage());
                 pause();
             }
         }
     }
 
-    public void viewMenuItem(){
-        if(restaurant.getMenuItems().isEmpty()){
-            System.out.println("There are no menu items yet");
-        } else {
-            printMenuItems();
+    public void viewMenu() {
+        try {
+            if (restaurant.getMenuItems().isEmpty()) {
+                System.out.println("There are no menu items yet.");
+            } else {
+                System.out.println("======= Full Menu =======");
+                printMenuItems();
+            }
+        } catch (Exception e) {
+            System.out.println("Error viewing menu: " + e.getMessage());
         }
         pause();
     }
 
-    
-     public void addMenuItem(){
-        System.out.println("======= Select Course Type =======");
-        System.out.println("1. Appetizer");
-        System.out.println("2. Entree");
-        System.out.println("3. Dessert");
-        System.out.println("4. Side");
-        int typeChoice = readInt("Enter a choice: ");
+    public void inspectMenuItem() {
+        try {
+            MenuItem item = pickMenuItemOrBack("Enter Item ID to inspect (or 0 to go back): ");
+            if (item == null) {
+                return;
+            }
 
-        String id = readLine("Item ID (e.g. A1, E1, D1, S1): ");
-        String name = readLine("Item Name: ");
-        String description = readLine("Description: ");
-        double basePrice = readDouble("Base Price: $");
-        int calories = readInt("Calories: ");
-    
+            System.out.println("======= Menu Item Info =======");
+            System.out.println("Course       : " + item.getClass().getSimpleName());
+            System.out.println("Item ID      : " + item.getItemId());
+            System.out.println("Name         : " + item.getName());
+            System.out.println("Description  : " + item.getDescription());
+            System.out.println("Base Price   : $" + item.getBasePrice());
+            System.out.println("Course Price : $" + item.calculateCoursePrice() + " (Price: $" + item.getPrice() + ")");
+            System.out.println("Calories     : " + item.getCalories() + " cal");
+            System.out.println("Prep Time    : " + item.calculatePrepTime() + " min");
+            System.out.println("Available    : " + item.isAvailable());
+            System.out.println("Times Ordered: " + item.getTimesOrdered());
+            System.out.println("Dietary Tags : " + item.getDietaryTags());
+            System.out.println("Allergens    : " + item.getAllergens());
+            System.out.println("Instructions : " + item.getServingInstructions());
 
-        MenuItem newItem;
-        //not finsihed
-        */
+            if (item instanceof Appetizer) {
+                Appetizer app = (Appetizer) item;
+                System.out.println("Portion Size : " + app.getPortionSize() + " (Sharers: " + app.getRecommendedSharers() + ")");
+                System.out.println("Cost/Person  : $" + app.calculateCostPerPerson());
+                System.out.println("Served Hot   : " + app.isServedHot());
+                System.out.println("Sauces       : " + app.getDippingSauces() + " (Extra sauce fee: $" + app.getExtraSauceCharge() + ")");
+            } else if (item instanceof Entree) {
+                Entree entree = (Entree) item;
+                System.out.println("Protein      : " + entree.getProteinType());
+                System.out.println("Cooking Temp : " + entree.getCookingTemp());
+                System.out.println("Sides        : " + entree.getSides().size() + " (Extra side upcharge: $" + entree.getSideUpchargeTotal() + ")");
+                System.out.println("Chef Special : " + entree.isChefSpecial() + " (Markup: $" + entree.getChefSpecialMarkup() + ")");
+            } else if (item instanceof Dessert) {
+                Dessert dessert = (Dessert) item;
+                System.out.println("Sweetness    : " + dessert.getSweetnessLevel() + "/5");
+                System.out.println("Ice Cream    : " + (dessert.isServedWithIceCream() ? dessert.getIceCreamFlavor() : "None"));
+                System.out.println("Toppings     : " + dessert.getToppings());
+                System.out.println("Contains Nuts: " + dessert.isContainsNuts());
+            }
+        } catch (Exception e) {
+            System.out.println("Error inspecting item: " + e.getMessage());
+        }
+        pause();
+    }
+
+    public void addMenuItem() {
+        try {
+            System.out.println("======= Add Menu Item =======");
+            System.out.println("1. Appetizer");
+            System.out.println("2. Entree");
+            System.out.println("3. Dessert");
+            System.out.println("4. Side");
+            System.out.println("5. Back");
+            int typeChoice = readInt("Enter a choice: ");
+
+            if (typeChoice == 5 || typeChoice == 0) {
+                return;
+            }
+            if (typeChoice < 1 || typeChoice > 4) {
+                throw new IllegalArgumentException("Choose 1 through 5.");
+            }
+
+            String id = readLine("Item ID (e.g. A1, E1, D1, S1): ");
+            String name = readLine("Item Name: ");
+            String description = readLine("Description: ");
+            double basePrice = readDouble("Base Price: $");
+            int calories = readInt("Calories: ");
+
+            MenuItem newItem;
+            switch (typeChoice) {
+                case 1:
+                    String portionSize = readLine("Portion Size (Individual, Shareable, Family): ");
+                    int sharers = readInt("Recommended Sharers: ");
+                    boolean servedHot = readYesNo("Served hot? (y/n): ");
+                    double extraSauceCharge = readDouble("Extra dipping sauce charge: $");
+                    newItem = new Appetizer(
+                        id, name, description, basePrice, calories,
+                        portionSize, sharers, new ArrayList<String>(), servedHot, extraSauceCharge
+                    );
+                    break;
+
+                case 2:
+                    String protein = readLine("Protein Type (Beef, Chicken, Pork, Fish, Lamb, Plant-Based, Pasta): ");
+                    String temp = readLine("Cooking Temp (Rare, Medium Rare, Medium, Medium Well, Well Done): ");
+                    boolean special = readYesNo("Chef's Special? (y/n): ");
+                    double markup = special ? readDouble("Chef's Special Markup: $") : 0.0;
+                    newItem = new Entree(
+                        id, name, description, basePrice, calories,
+                        protein, temp, new ArrayList<Side>(), special, markup
+                    );
+                    break;
+
+                case 3:
+                    int sweetness = readInt("Sweetness Level (1-5): ");
+                    boolean hasNuts = readYesNo("Contains nuts? (y/n): ");
+                    boolean withIceCream = readYesNo("Serve with ice cream? (y/n): ");
+                    if (withIceCream) {
+                        String flavor = readLine("Ice cream flavor: ");
+                        newItem = new Dessert(id, name, description, basePrice, calories, sweetness, true, flavor, hasNuts);
+                    } else {
+                        newItem = new Dessert(id, name, description, basePrice, calories, sweetness, hasNuts);
+                    }
+                    break;
+
+                case 4:
+                    if (readYesNo("Add an allergen now? (y/n): ")) {
+                        ArrayList<String> allergens = new ArrayList<String>();
+                        allergens.add(readLine("Allergen name: "));
+                        newItem = new Side(id, name, description, basePrice, calories, allergens);
+                    } else {
+                        newItem = new Side(id, name, description, basePrice, calories);
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Choose 1 through 5.");
+            }
+
+            restaurant.addMenuItem(newItem);
+            System.out.println("Added " + newItem.getName() + " (ID: " + newItem.getItemId() + ") to the menu.");
+        } catch (Exception e) {
+            System.out.println("Error adding menu item: " + e.getMessage());
+        }
+        pause();
+    }
+
+    public void editMenuItem() {
+        try {
+            MenuItem item = pickMenuItemOrBack("Enter Item ID to edit (or 0 to go back): ");
+            if (item == null) {
+                return;
+            }
+
+            System.out.println("======= Edit " + item.getName() + " =======");
+            System.out.println("1. Change Name / Description / ID");
+            System.out.println("2. Change Base Price or Adjust by %");
+            System.out.println("3. Change Calories or Toggle Availability");
+            System.out.println("4. Edit Dietary Tags or Allergens");
+            System.out.println("5. Edit Course Details (" + item.getClass().getSimpleName() + ")");
+            System.out.println("6. Back");
+            int choice = readInt("Enter a choice: ");
+
+            if (choice == 6 || choice == 0) {
+                return;
+            }
+
+            switch (choice) {
+                case 1:
+                    int fieldChoice = readInt("1 = Name, 2 = Description, 3 = Item ID: ");
+                switch (fieldChoice) {
+                    case 1:
+                        item.setName(readLine("New Name: "));
+                        break;
+                    case 2:
+                        item.setDescription(readLine("New Description: "));
+                        break;
+                    case 3:
+                        item.setItemId(readLine("New Item ID: "));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Choose 1, 2, or 3.");
+                }
+                    System.out.println("Updated item info: " + item.getName() + " (ID: " + item.getItemId() + ")");
+                    break;
+
+
+                case 2:
+                    int priceChoice = readInt("1 = Set Base Price, 2 = Adjust Base Price by %, 3 = Preview Discount: ");
+                switch (priceChoice) {
+                    case 1:
+                        item.setBasePrice(readDouble("New Base Price: $"));
+                        System.out.println("Base price set to $" + item.getBasePrice());
+                        break;
+                    case 2:
+                        double updated = item.adjustBasePrice(readDouble("Percent change (e.g. 10 or -15): "));
+                        System.out.println("Adjusted base price to $" + updated);
+                        break;
+                    case 3:
+                        double disc = item.applyDiscount(item.calculateCoursePrice(), readDouble("Discount % (0-80): "));
+                        System.out.println("Discounted price preview: $" + disc);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Choose 1, 2, or 3.");
+                }
+                    break;
+
+
+                case 3:
+                    int statusChoice = readInt("1 = Set Calories, 2 = Toggle Availability, 3 = Record Order Count: ");
+                switch (statusChoice) {
+                    case 1:
+                        item.setCalories(readInt("New Calories: "));
+                        System.out.println("Calories set to " + item.getCalories());
+                        break;
+                    case 2:
+                        item.updateAvailability(!item.isAvailable());
+                        System.out.println("Available is now: " + item.isAvailable());
+                        break;
+                    case 3:
+                        item.recordOrder(readInt("Order count to add: "));
+                        System.out.println("Times ordered: " + item.getTimesOrdered());
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Choose 1, 2, or 3.");
+                }
+                    break;
+
+
+                case 4:
+                    int tagChoice = readInt("1 = Add Tag, 2 = Remove Tag, 3 = Add Allergen, 4 = Remove Allergen: ");
+                switch (tagChoice) {
+                    case 1:
+                        item.addDietaryTag(readLine("Dietary Tag: "));
+                        break;
+                    case 2:
+                        item.removeDietaryTag(readLine("Dietary Tag to remove: "));
+                        break;
+                    case 3:
+                        item.addAllergen(readLine("Allergen: "));
+                        break;
+                    case 4:
+                        item.removeAllergen(readLine("Allergen to remove: "));
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Choose 1 through 4.");
+                }
+                    System.out.println("Tags: " + item.getDietaryTags() + " | Allergens: " + item.getAllergens());
+                    break;
+
+
+                case 5:
+                    editCourseDetails(item);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Choose 1 through 6.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error editing menu item: " + e.getMessage());
+        }
+        pause();
+    }
+
+    public void removeMenuItem() {
+        try {
+            MenuItem item = pickMenuItemOrBack("Enter Item ID to remove (or 0 to go back): ");
+            if (item == null) {
+                return;
+            }
+            restaurant.removeMenuItem(item);
+            System.out.println("Removed " + item.getName() + " (ID: " + item.getItemId() + ") from the menu.");
+        } catch (Exception e) {
+            System.out.println("Error removing menu item: " + e.getMessage());
+        }
+        pause();
+    }
+
+    public void loadSampleMenu() {
+        try {
+            if (sampleMenuLoaded) {
+                System.out.println("Sa1mple menu already loaded");
+                pause();
+                return;
+            }
+            populateSampleMenuItems();
+            System.out.println("Sample menu loaded.");
+        } catch (Exception e) {
+            System.out.println("Error loading sample menu: " + e.getMessage());
+        }
+        pause();
+    }
+
+    private void populateSampleMenuItems() throws DuplicateEntryException, LimitException {
+        if (sampleMenuLoaded) {
+            return;
+        }
+
+        Side fries = new Side("S1", "French Fries", "Crispy salted fries", 4.00, 320);
+        Side slaw = new Side("S2", "Coleslaw", "Creamy house slaw", 3.50, 180);
+        restaurant.addMenuItem(fries);
+        restaurant.addMenuItem(slaw);
+
+        Appetizer nachos = new Appetizer(
+            "A1", "Loaded Nachos", "Tortilla chips with queso", 10.00, 600,
+            "Shareable", 2, new ArrayList<>(), true, 1.00
+        );
+        nachos.addDippingSauce("Salsa");
+        restaurant.addMenuItem(nachos);
+
+        ArrayList<Side> steakSides = new ArrayList<>();
+        steakSides.add(fries);
+        steakSides.add(slaw);
+        Entree ribeye = new Entree(
+            "E1", "Ribeye Steak", "12oz grilled ribeye", 26.00, 700,
+            "Beef", "Medium", steakSides, true, 4.00
+        );
+        restaurant.addMenuItem(ribeye);
+
+        Dessert brownie = new Dessert(
+            "D1", "Warm Brownie", "Fudge brownie a la mode", 7.50, 450,
+            4, true, "Vanilla", false
+        );
+        restaurant.addMenuItem(brownie);
+
+        sampleMenuLoaded = true;
+    }
+
+    private void editCourseDetails(MenuItem item) {
+        if (item instanceof Appetizer app) {
+            int sub = readInt("1 = Portion Size, 2 = Add Sauce, 3 = Remove Sauce, 4 = Extra Sauce Charge: ");
+            switch (sub) {
+                case 1:
+                    app.changePortionSize(readLine("New Portion Size (Individual, Shareable, Family): "));
+                    break;
+                case 2:
+                    app.addDippingSauce(readLine("Sauce to add: "));
+                    break;
+                case 3:
+                    app.removeDippingSauce(readLine("Sauce to remove: "));
+                    break;
+                case 4:
+                    app.setExtraSauceCharge(readDouble("New Extra Sauce Charge: $"));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Choose 1 through 4.");
+            }
+            System.out.println("Updated Appetizer Course Price: $" + app.calculateCoursePrice());
+        } else if (item instanceof Entree entree) {
+            int sub = readInt("1 = Cooking Temp, 2 = Protein Type, 3 = Add Side, 4 = Substitute Side, 5 = Chef Special: ");
+            switch (sub) {
+                case 1:
+                    entree.customizeCookingTemp(readLine("New Cooking Temp (Rare, Medium Rare, Medium, Medium Well, Well Done): "));
+                    break;
+                case 2:
+                    entree.setProteinType(readLine("New Protein (Beef, Chicken, Pork, Fish, Lamb, Plant-Based, Pasta): "));
+                    break;
+                case 3:
+                    Side s = new Side(
+                            readLine("Side ID: "),
+                            readLine("Side Name: "),
+                            readLine("Side Description: "),
+                            readDouble("Side Price: $"),
+                            readInt("Side Calories: ")
+                    );  entree.addSide(s);
+                    break;
+                case 4:
+                    List<Side> currentSides = entree.getSides();
+                    if (currentSides.isEmpty()) {
+                        throw new IllegalStateException("This entree has no sides to substitute.");
+                    }   Side replacement = new Side(
+                            readLine("New Side ID: "),
+                            readLine("New Side Name: "),
+                            readLine("New Side Description: "),
+                            readDouble("New Side Price: $"),
+                            readInt("New Side Calories: ")
+                    );  entree.subSide(currentSides.get(0), replacement);
+                    break;
+                case 5:
+                    boolean special = readYesNo("Mark as Chef's Special? (y/n): ");
+                    double markup = special ? readDouble("Markup amount: $") : 0.0;
+                    entree.configureChefSpecial(special, markup);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Choose 1 through 5.");
+            }
+            System.out.println("Updated Entree Course Price: $" + entree.calculateCoursePrice());
+        } else if (item instanceof Dessert dessert) {
+            int sub = readInt("1 = Add Topping, 2 = Add Ice Cream, 3 = Remove Ice Cream, 4 = Sweetness Level: ");
+            switch (sub) {
+                case 1:
+                    dessert.addTopping(
+                            readLine("Topping Name: "),
+                            readInt("Topping Calories: "),
+                            readYesNo("Contains nuts? (y/n): ")
+                    );  break;
+                case 2:
+                    dessert.addIceCreamScoop(readLine("Ice Cream Flavor: "));
+                    break;
+                case 3:
+                    dessert.removeIceCreamScoop();
+                    break;
+                case 4:
+                    dessert.adjustSweetness(readInt("Sweetness Level (1-5): "));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Choose 1 through 4.");
+            }
+            System.out.println("Updated Dessert Course Price: $" + dessert.calculateCoursePrice());
+        } else {
+            System.out.println("Side item uses standard MenuItem fields (Options 1-4).");
+        }
+    }
+
+    private void printMenuItems() {
+        for (MenuItem item : restaurant.getMenuItems()) {
+            System.out.println(
+                "[" + item.getClass().getSimpleName() + "] ID: " + item.getItemId()
+                + " | " + item.getName()
+                + " | $" + item.calculateCoursePrice()
+                + " | " + item.getCalories() + " cal"
+                + " | Available: " + item.isAvailable()
+            );
+        }
+    }
+
+    private MenuItem pickMenuItemOrBack(String prompt) {
+        if (restaurant.getMenuItems().isEmpty()) {
+            throw new IllegalStateException("There are no menu items yet.");
+        }
+        printMenuItems();
+        String id = readLine(prompt).trim();
+        if (id.isEmpty() || id.equals("0") || id.equalsIgnoreCase("back")) {
+            return null;
+        }
+        for (MenuItem item : restaurant.getMenuItems()) {
+            if (item.getItemId().equalsIgnoreCase(id)) {
+                return item;
+            }
+        }
+        throw new IllegalArgumentException("No menu item found with ID: " + id);
+    }
+
+    private boolean readYesNo(String prompt) {
+        String ans = readLine(prompt).trim();
+        return ans.equalsIgnoreCase("y") || ans.equalsIgnoreCase("yes");
+    }
 
     // ---------------------- Restaurant ----------------------
     public void viewSummary() {
@@ -697,7 +1133,8 @@ public class MainMenu {
         System.out.println("Employees: " + restaurant.getEmployees().size());
         System.out.println("Reservations: " + restaurant.getReservations().size());
         System.out.println("Orders: " + restaurant.getOrders().size());
-        System.out.println("Menu: ");
+        System.out.print("Menu: " );
+        viewMenu();
         pause();
     }
 

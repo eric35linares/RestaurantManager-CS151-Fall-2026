@@ -92,7 +92,7 @@ public class Dessert extends MenuItem{
     @Override 
     public String getServingInstructions(){
         String aLaModeText = withIceCream
-            ? "a la mode with 1 scoop of " + iceCreamFlavor + "ice cream"
+            ? "a la mode with 1 scoop of " + iceCreamFlavor + " ice cream"
             : "";
         String toppingsText = toppings.isEmpty()
             ? ""
