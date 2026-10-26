@@ -93,7 +93,9 @@ public class MainMenu {
                 orderMenu();
                 break;  
             case 5:
-                itemMenu();
+                System.out.println("Menu item management coming soon.");
+                pause();
+                //itemMenu();
                 break;
             case 6:
                 viewSummary();
@@ -123,7 +125,8 @@ public class MainMenu {
             System.out.println("2. Add a Table");
             System.out.println("3. Seat a walk-in party");
             System.out.println("4. Clear a Table");
-            System.out.println("5. Back to Main Menu");
+            System.out.println("5. Assign Waiter to Table");
+            System.out.println("6. Back to Main Menu");
             int choice = readInt("Enter a choice: ");
 
             try {
@@ -141,6 +144,9 @@ public class MainMenu {
                         clearTable();
                         break;
                     case 5:
+                        assignWaiter();
+                        break;
+                    case 6:
                         running = false;
                         break;
                     default:
@@ -155,8 +161,12 @@ public class MainMenu {
     }
 
     public void viewTables() {
-        ArrayList<Table> tables = restaurant.getTables();
-        System.out.println("Tables: " + tables);
+        if (restaurant.getTables().isEmpty()) {
+            System.out.println("There are no tables yet.");
+        }
+        else {
+            printTables();
+        }
         pause();
     }
 
@@ -177,8 +187,21 @@ public class MainMenu {
 
     public void clearTable() 
         throws TableUnavailableException {
-        int tableNumber = readInt("Table number to clear: ");
-        restaurant.clearTable(restaurant.getTables().get(tableNumber));
+        Table table = pickTable();
+        restaurant.clearTable(table);
+        System.out.println("Table " + table.getTableNumber() + " has been cleared.");
+        pause();
+    }
+
+    public void assignWaiter() {
+        Table table = pickTable();
+        if (table.getServer() != null) {
+            throw new IllegalStateException(
+                "Table " + table.getTableNumber() + " already has a waiter.");
+        }
+        Employee waiter = pickEmployee();
+        restaurant.assignServer(table, waiter);
+        System.out.println(waiter.getName() + " is no the waiter for table " + table.getTableNumber());
     }
 
     // ---------------------- Employees ----------------------
@@ -402,7 +425,7 @@ public class MainMenu {
 
     }
 
-    // ---------------------- Orders ---------------------- ANSON
+    // ---------------------- Orders ---------------------- 
     private void orderMenu() {
         boolean running = true;
         while (running) {
@@ -485,131 +508,130 @@ public class MainMenu {
     }
 
     public void addToOrder() {
-    ArrayList<Order> orders = restaurant.getOrders();
-    ArrayList<MenuItem> menuItems = restaurant.getMenuItems();
+        ArrayList<Order> orders = restaurant.getOrders();
+        ArrayList<MenuItem> menuItems = restaurant.getMenuItems();
 
-    if (orders.isEmpty()) {
-        System.out.println("No orders yet.");
+        if (orders.isEmpty()) {
+            System.out.println("No orders yet.");
+            pause();
+            return;
+        }
+
+        if (menuItems.isEmpty()) {
+            System.out.println("There are no menu items.");
+            pause();
+            return;
+        }
+
+        System.out.println("======= Orders =======");
+
+        for (int i = 0; i < orders.size(); i++) {
+            System.out.println((i + 1) + ". " + orders.get(i));
+        }
+
+        int orderChoice = readInt("Select an order: ");
+
+        if (orderChoice < 1 || orderChoice > orders.size()) {
+            throw new IllegalArgumentException("Invalid order selected.");
+        }
+
+        Order order = orders.get(orderChoice - 1);
+
+        System.out.println("======= Menu Items =======");
+
+        for (int i = 0; i < menuItems.size(); i++) {
+            MenuItem item = menuItems.get(i);
+            System.out.println((i + 1) + ". " + item.getName()
+                    + " - $" + item.calculateCoursePrice());
+        }
+
+        int itemChoice = readInt("Select a menu item: ");
+
+        if (itemChoice < 1 || itemChoice > menuItems.size()) {
+            throw new IllegalArgumentException("Invalid menu item selected.");
+        }
+
+        MenuItem item = menuItems.get(itemChoice - 1);
+
+        order.addItem(item);
+
+        System.out.println(item.getName() + " added to order.");
         pause();
-        return;
     }
-
-    if (menuItems.isEmpty()) {
-        System.out.println("There are no menu items.");
-        pause();
-        return;
-    }
-
-    System.out.println("======= Orders =======");
-
-    for (int i = 0; i < orders.size(); i++) {
-        System.out.println((i + 1) + ". " + orders.get(i));
-    }
-
-    int orderChoice = readInt("Select an order: ");
-
-    if (orderChoice < 1 || orderChoice > orders.size()) {
-        throw new IllegalArgumentException("Invalid order selected.");
-    }
-
-    Order order = orders.get(orderChoice - 1);
-
-    System.out.println("======= Menu Items =======");
-
-    for (int i = 0; i < menuItems.size(); i++) {
-        MenuItem item = menuItems.get(i);
-        System.out.println((i + 1) + ". " + item.getName()
-                + " - $" + item.calculateCoursePrice());
-    }
-
-    int itemChoice = readInt("Select a menu item: ");
-
-    if (itemChoice < 1 || itemChoice > menuItems.size()) {
-        throw new IllegalArgumentException("Invalid menu item selected.");
-    }
-
-    MenuItem item = menuItems.get(itemChoice - 1);
-
-    order.addItem(item);
-
-    System.out.println(item.getName() + " added to order.");
-    pause();
-}
+        
     
-   
-public void checkoutOrder() {
-    ArrayList<Order> orders = restaurant.getOrders();
+    public void checkoutOrder() {
+        ArrayList<Order> orders = restaurant.getOrders();
 
-    if (orders.isEmpty()) {
-        System.out.println("There are no orders.");
+        if (orders.isEmpty()) {
+            System.out.println("There are no orders.");
+            pause();
+            return;
+        }
+
+        System.out.println("======= Checkout =======");
+
+        for (int i = 0; i < orders.size(); i++) {
+            System.out.println((i + 1) + ". " + orders.get(i));
+        }
+
+        int choice = readInt("Select order to checkout: ");
+
+        if (choice < 1 || choice > orders.size()) {
+            throw new IllegalArgumentException("Invalid order.");
+        }
+
+        Order order = orders.get(choice - 1);
+
+        if (order.isCompleted()) {
+            throw new IllegalStateException(
+                "This order has already been checked out.");
+        }
+
+        double discount = readDouble("Discount percentage (0-100): ");
+
+        if (!Double.isFinite(discount) || discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Invalid discount.");
+        }
+
+        double tip = readDouble("Tip amount: $");
+
+        if (!Double.isFinite(tip) || tip < 0) {
+            throw new IllegalArgumentException("Invalid tip.");
+        }
+
+        double subtotal = order.applyDiscount(
+            order.calculateSubtotal(), discount);
+
+        double total = subtotal + (subtotal * 0.10) + tip;
+
+        System.out.printf("Total due: $%.2f%n", total);
+
+        double payment = readDouble("Payment amount: $");
+
+        if (!Double.isFinite(payment) || payment <= 0) {
+            throw new IllegalArgumentException("Invalid payment.");
+        }
+
+        if (payment + 0.001 < total) {
+            throw new IllegalArgumentException(
+                "Payment does not cover the total.");
+        }
+
+        order.setDiscount(discount);
+        order.completeOrder();
+
+        Receipt receipt = order.generateReceipt();
+        receipt.addTip(tip);
+        receipt.recordPayment(payment);
+
+        System.out.println(receipt);
+
+        System.out.printf("Remaining balance: $%.2f%n",
+            Math.max(0, receipt.calculateBalance()));
+
         pause();
-        return;
     }
-
-    System.out.println("======= Checkout =======");
-
-    for (int i = 0; i < orders.size(); i++) {
-        System.out.println((i + 1) + ". " + orders.get(i));
-    }
-
-    int choice = readInt("Select order to checkout: ");
-
-    if (choice < 1 || choice > orders.size()) {
-        throw new IllegalArgumentException("Invalid order.");
-    }
-
-    Order order = orders.get(choice - 1);
-
-    if (order.isCompleted()) {
-        throw new IllegalStateException(
-            "This order has already been checked out.");
-    }
-
-    double discount = readDouble("Discount percentage (0-100): ");
-
-    if (!Double.isFinite(discount) || discount < 0 || discount > 100) {
-        throw new IllegalArgumentException("Invalid discount.");
-    }
-
-    double tip = readDouble("Tip amount: $");
-
-    if (!Double.isFinite(tip) || tip < 0) {
-        throw new IllegalArgumentException("Invalid tip.");
-    }
-
-    double subtotal = order.applyDiscount(
-        order.calculateSubtotal(), discount);
-
-    double total = subtotal + (subtotal * 0.10) + tip;
-
-    System.out.printf("Total due: $%.2f%n", total);
-
-    double payment = readDouble("Payment amount: $");
-
-    if (!Double.isFinite(payment) || payment <= 0) {
-        throw new IllegalArgumentException("Invalid payment.");
-    }
-
-    if (payment + 0.001 < total) {
-        throw new IllegalArgumentException(
-            "Payment does not cover the total.");
-    }
-
-    order.setDiscount(discount);
-    order.completeOrder();
-
-    Receipt receipt = order.generateReceipt();
-    receipt.addTip(tip);
-    receipt.recordPayment(payment);
-
-    System.out.println(receipt);
-
-    System.out.printf("Remaining balance: $%.2f%n",
-        Math.max(0, receipt.calculateBalance()));
-
-    pause();
-}
-
 
 
 // ---------------------- Menu ---------------------- EMMET
@@ -1129,12 +1151,12 @@ public void checkoutOrder() {
             restaurant.addTable(new Table(4));
             restaurant.addTable(new Table(8));
 
-            restaurant.hireEmployee(new Employee("Eric Linares", "SERVER", 15.50));
+            restaurant.hireEmployee(new Employee("Eric", "SERVER", 15.50));
             restaurant.hireEmployee(new Employee("Anson", "CHEF", 30.00));
             restaurant.hireEmployee(new Employee("Emmet", "MANAGER", 50.00));
 
             restaurant.seatWalkIn(2);
-            // TO-DO restaurant.assignServer(null, null);
+            restaurant.assignServer(restaurant.getTables().get(0), restaurant.getEmployees().get(0));
             restaurant.makeReservation("Jim", 4);
 
         } catch (Exception e) {
@@ -1218,6 +1240,32 @@ public void checkoutOrder() {
         return role;
     }
 
+    private void printTables() {
+        for (Table table : restaurant.getTables()) {
+            System.out.println("Table " + table.getTableNumber()
+                + " | Capacity: " + table.getCapacity() 
+                + " | Party Size: " + table.getCurrentPartySize() 
+                + " | " + table.getServer());
+        }
+    }
+
+    private Table pickTable() {
+        if (restaurant.getTables().isEmpty()) {
+            throw new IllegalStateException(
+                " There are no tables in restaurant yet.");
+        }
+        printTables();
+        int tableNumber = readInt("Table #: ");
+        for (Table table : restaurant.getTables()) {
+            if (table.getTableNumber() == tableNumber) {
+                return table;
+            }
+        }
+        throw new IllegalArgumentException(
+            "No table has this #.");
+    }
+
+
     private void printEmployees() {
         for (Employee employee : restaurant.getEmployees()) {
             System.out.println("# " + employee.getEmployeeID()
@@ -1249,7 +1297,7 @@ public void checkoutOrder() {
             System.out.println("# " + reservation.getReservationID()
                 + " | " + reservation.getCustomerName() 
                 + " | Party of " + reservation.getPartySize() 
-                + " | $" + reservation.getStatus()
+                + " | " + reservation.getStatus()
                 + " | " + reservation.getAssignedTable());
         }
     }
