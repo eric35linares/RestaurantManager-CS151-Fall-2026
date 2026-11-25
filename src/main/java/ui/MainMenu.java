@@ -9,6 +9,7 @@ import exceptions.LimitException;
 import exceptions.TableUnavailableException;
 import restaurant.Appetizer;
 import restaurant.Dessert;
+import restaurant.Drink;
 import restaurant.Employee;
 import restaurant.Entree;
 import restaurant.MenuItem;
@@ -93,9 +94,7 @@ public class MainMenu {
                 orderMenu();
                 break;  
             case 5:
-                System.out.println("Menu item management coming soon.");
-                pause();
-                //itemMenu();
+                itemMenu();
                 break;
             case 6:
                 viewSummary();
@@ -736,6 +735,12 @@ public class MainMenu {
                 System.out.println("Ice Cream    : " + (dessert.isServedWithIceCream() ? dessert.getIceCreamFlavor() : "None"));
                 System.out.println("Toppings     : " + dessert.getToppings());
                 System.out.println("Contains Nuts: " + dessert.isContainsNuts());
+            } else if (item instanceof Drink) {
+                Drink drink = (Drink) item;
+                System.out.println("Flavor       : " + drink.getDrinkFlavor());
+                System.out.println("Alcoholic    : " + drink.isAlcoholic());
+                System.out.println("Strength     : " + String.format("%.2f", drink.getAlcoholicStrength()));
+                System.out.println("Volume       : " + String.format("%.0f oz", drink.getVolume()));
             }
         } catch (Exception e) {
             System.out.println("Error inspecting item: " + e.getMessage());
@@ -750,17 +755,18 @@ public class MainMenu {
             System.out.println("2. Entree");
             System.out.println("3. Dessert");
             System.out.println("4. Side");
-            System.out.println("5. Back");
+            System.out.println("5. Drink");
+            System.out.println("6. Back");
             int typeChoice = readInt("Enter a choice: ");
 
-            if (typeChoice == 5 || typeChoice == 0) {
+            if (typeChoice == 6 || typeChoice == 0) {
                 return;
             }
-            if (typeChoice < 1 || typeChoice > 4) {
-                throw new IllegalArgumentException("Choose 1 through 5.");
+            if (typeChoice < 1 || typeChoice > 5) {
+                throw new IllegalArgumentException("Choose 1 through 6.");
             }
 
-            String id = readLine("Item ID (e.g. A1, E1, D1, S1): ");
+            String id = readLine("Item ID (e.g. A1, E1, D1, S1, DR1): ");
             String name = readLine("Item Name: ");
             String description = readLine("Description: ");
             double basePrice = readDouble("Base Price: $");
@@ -812,6 +818,18 @@ public class MainMenu {
                     }
                     break;
 
+                case 5:
+                    boolean alcoholic = readYesNo("Is this drink alcoholic? (y/n): ");
+                    float strength = alcoholic
+                        ? (float) readDouble("Alcohol strength (0.0-0.15): ")
+                        : 0.0f;
+                    String drinkFlavor = readLine("Drink flavor: ");
+                    float volume = (float) readDouble("Volume in ounces (4-64): ");
+                    newItem = new Drink(
+                        id, name, description, basePrice, calories,
+                        strength, alcoholic, drinkFlavor, volume
+                    );
+                    break;
                 default:
                     throw new IllegalArgumentException("Choose 1 through 5.");
             }
@@ -1002,6 +1020,12 @@ public class MainMenu {
         );
         restaurant.addMenuItem(brownie);
 
+        Drink lemonade = new Drink(
+            "DR1", "House Lemonade", "Freshly squeezed lemonade", 4.50, 180,
+            0.0f, false, "Lemon", 16.0f
+        );
+        restaurant.addMenuItem(lemonade);
+
         sampleMenuLoaded = true;
     }
 
@@ -1086,6 +1110,11 @@ public class MainMenu {
                     throw new IllegalArgumentException("Choose 1 through 4.");
             }
             System.out.println("Updated Dessert Course Price: $" + dessert.calculateCoursePrice());
+        } else if (item instanceof Drink drink) {
+            System.out.println("Drink details are set when the drink is created.");
+            System.out.println("Flavor: " + drink.getDrinkFlavor()
+                + " | Alcoholic: " + drink.isAlcoholic()
+                + " | Volume: " + String.format("%.0f oz", drink.getVolume()));
         } else {
             System.out.println("Side item uses standard MenuItem fields (Options 1-4).");
         }
